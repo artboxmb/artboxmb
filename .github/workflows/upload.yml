@@ -8,21 +8,26 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Decode and save image
+      - name: Decode and save uploaded image
         run: |
           mkdir -p new_uploads
           echo "${{ github.event.client_payload.image_base64 }}" | base64 --decode > "new_uploads/${{ github.event.client_payload.image_name }}"
           echo "Opis slike: ${{ github.event.client_payload.image_desc }}" > "new_uploads/${{ github.event.client_payload.image_name }}.txt"
 
-      - name: Commit and push
+      - name: Commit and push changes
+        env:
+          TOKEN_UPLOAD: ${{ secrets.TOKEN_UPLOAD }}
         run: |
           git config user.name "ArtBox Bot"
           git config user.email "artboxmb@gmail.com"
           mv new_uploads/* ./
           rm -rf new_uploads
           git add .
-          git commit -m "📸 Nova slika: ${{ github.event.client_payload.image_name }}" || echo "No changes"
-          git push
+          git commit -m "📸 Nova slika: ${{ github.event.client_payload.image_name }}" || echo "No changes to commit"
+          git push https://x-access-token:${TOKEN_UPLOAD}@github.com/artboxmb/artboxmb.git main
+
+      - name: Confirm upload success
+        run: echo "✅ Slika uspješno dodana i pushana na GitHub!"
