@@ -30,7 +30,6 @@
     #contact-sidebar { flex: 1; min-width: 280px; position: sticky; top: 20px; background-color: #fffaf3; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); height: fit-content; }
     footer { text-align: center; padding: 20px; background-color: #e8dcc5; color: #3a2b1a; margin-top: 40px; font-size: 0.95em; }
 
-    /* 🔹 Modalni prozor za upload */
     #uploadModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
     #uploadModal .modal-content {
       background-color: #fff8eb;
@@ -61,14 +60,12 @@
     </div>
   </header>
 
-  <!-- 🔹 Gumb koji otvara upload modal -->
   <div style="text-align:center; margin-top:20px;">
     <button id="openUploadModal" style="background-color:#4b3f2f;color:#fff;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:bold;">
       📸 Dodaj novu fotografiju
     </button>
   </div>
 
-  <!-- 🔹 Modalni prozor za upload -->
   <div id="uploadModal">
     <div class="modal-content">
       <button id="closeUploadModal">✖</button>
@@ -81,29 +78,11 @@
     </div>
   </div>
 
-  <!-- 🔹 Galerija -->
- <section id="main-content">
-  <section id="gallery">
-    <h2>Galerija</h2>
-    <div id="gallery-container" class="gallery-container"></div>
-  </section>
-
-  <aside id="contact-sidebar">
-    <h2>Kontakt</h2>
-    <form action="mailto:artboxmb@gmail.com" method="post" enctype="text/plain">
-      <label>Ime i prezime:</label>
-      <input type="text" name="Ime" required />
-      <label>Broj telefona:</label>
-      <input type="tel" name="Telefon" />
-      <label>Email adresa:</label>
-      <input type="email" name="Email" required />
-      <label>Poruka:</label>
-      <textarea name="Poruka" rows="4" required></textarea>
-      <button type="submit">Pošalji poruku</button>
-    </form>
-  </aside>
-</section>
-
+  <section id="main-content">
+    <section id="gallery">
+      <h2>Galerija</h2>
+      <div id="gallery-container" class="gallery-container"></div>
+    </section>
 
     <aside id="contact-sidebar">
       <h2>Kontakt</h2>
@@ -131,15 +110,12 @@
   <button id="toTopBtn" onclick="scrollToTop()">⬆ Na vrh</button>
 
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 
 <script>
-  // Gumb "Na vrh"
   const toTopBtn = document.getElementById("toTopBtn");
   window.onscroll = () => toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
   function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
 
-  // 🔹 Modal logika
   const openModal = document.getElementById("openUploadModal");
   const closeModal = document.getElementById("closeUploadModal");
   const modal = document.getElementById("uploadModal");
@@ -147,30 +123,18 @@
   closeModal.addEventListener("click", () => modal.style.display = "none");
   window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
-  // 🔹 Upload slike u /uploads/
   document.getElementById("uploadBtn").addEventListener("click", async () => {
     const pass = document.getElementById("uploadPass").value.trim();
     const file = document.getElementById("uploadFile").files[0];
     const desc = document.getElementById("uploadDesc").value.trim();
     const status = document.getElementById("uploadStatus");
 
-    if (pass !== "ivo11111986") {
-      status.textContent = "❌ Pogrešna lozinka!";
-      return;
-    }
-    if (!file) {
-      status.textContent = "⚠️ Odaberi sliku.";
-      return;
-    }
+    if (pass !== "ivo11111986") return status.textContent = "❌ Pogrešna lozinka!";
+    if (!file) return status.textContent = "⚠️ Odaberi sliku.";
 
     status.textContent = "⏳ Učitavam...";
     const base64 = await toBase64(file);
-
-    const payload = {
-      image_name: file.name,
-      image_desc: desc || "",
-      image_base64: base64.split(",")[1]
-    };
+    const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
 
     try {
       const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev", {
@@ -178,21 +142,14 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-
       const text = await res.text();
       if (res.ok) {
         status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
         await loadUploadedImages(true);
-      } else {
-        status.textContent = `⚠️ Greška: ${text}`;
-      }
-    } catch (err) {
+      } else status.textContent = `⚠️ Greška: ${text}`;
+    } catch {
       status.textContent = "❌ Greška pri spajanju na server.";
-      console.error(err);
     }
-
-    document.getElementById("uploadFile").value = "";
-    document.getElementById("uploadDesc").value = "";
   });
 
   function toBase64(file) {
@@ -204,54 +161,49 @@
     });
   }
 
-  // 🔹 Učitaj slike iz foldera /uploads
   async function loadUploadedImages(refresh = false) {
     try {
-      const gallery = document.querySelector(".gallery-container");
-      if (refresh) gallery.innerHTML = ""; // osvježi samo kad se doda nova slika
+      const gallery = document.getElementById("gallery-container");
+      if (refresh) gallery.innerHTML = "";
 
       const res = await fetch("https://api.github.com/repos/artboxmb/artboxmb/contents/uploads");
       const files = await res.json();
-
       const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|jfif)$/i)).reverse();
 
       for (const img of images) {
         const imgUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}`;
-        const link = document.createElement("a");
-        link.href = imgUrl;
-        link.setAttribute("data-lightbox", "artbox");
-        link.setAttribute("data-title", img.name);
+        const descUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}.txt`;
 
-        const image = document.createElement("img");
-        image.src = imgUrl;
-        image.alt = img.name;
+        let opis = img.name;
+        try {
+          const descRes = await fetch(descUrl);
+          if (descRes.ok) opis = await descRes.text();
+        } catch {}
 
-        link.appendChild(image);
-        gallery.appendChild(link);
+        const a = document.createElement("a");
+        a.href = imgUrl;
+        a.setAttribute("data-lightbox", "artbox");
+        a.setAttribute("data-title", opis.trim());
+
+        const imageEl = document.createElement("img");
+        imageEl.src = imgUrl;
+        imageEl.alt = opis.trim();
+
+        a.appendChild(imageEl);
+        gallery.appendChild(a);
       }
     } catch (err) {
       console.error("❌ Greška pri učitavanju slika:", err);
     }
   }
 
-  // 🔸 Učitaj slike kad se stranica otvori
   window.addEventListener("DOMContentLoaded", loadUploadedImages);
 
   lightbox.option({
     resizeDuration: 200,
     wrapAround: true,
-    alwaysShowNavOnTouchDevices: true,
     showImageNumberLabel: false,
   });
 </script>
-
-
 </body>
 </html>
-
-
-
-
-
-
-
