@@ -213,73 +213,85 @@
   <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 
-  <script>
-    // Gumb "Na vrh"
-    const toTopBtn = document.getElementById("toTopBtn");
-    window.onscroll = () => toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
-    function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
+<script>
+  // Gumb "Na vrh"
+  const toTopBtn = document.getElementById("toTopBtn");
+  window.onscroll = () => toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+  function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
 
-    // 🔹 Modal logika
-    const openModal = document.getElementById("openUploadModal");
-    const closeModal = document.getElementById("closeUploadModal");
-    const modal = document.getElementById("uploadModal");
-    openModal.addEventListener("click", () => modal.style.display = "flex");
-    closeModal.addEventListener("click", () => modal.style.display = "none");
-    window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+  // 🔹 Modal logika
+  const openModal = document.getElementById("openUploadModal");
+  const closeModal = document.getElementById("closeUploadModal");
+  const modal = document.getElementById("uploadModal");
+  openModal.addEventListener("click", () => modal.style.display = "flex");
+  closeModal.addEventListener("click", () => modal.style.display = "none");
+  window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
-    // 🔹 Upload slike
-    document.getElementById("uploadBtn").addEventListener("click", async () => {
-      const pass = document.getElementById("uploadPass").value.trim();
-      const file = document.getElementById("uploadFile").files[0];
-      const desc = document.getElementById("uploadDesc").value.trim();
-      const status = document.getElementById("uploadStatus");
+  // 🔹 Upload slike
+  document.getElementById("uploadBtn").addEventListener("click", async () => {
+    const pass = document.getElementById("uploadPass").value.trim();
+    const file = document.getElementById("uploadFile").files[0];
+    const desc = document.getElementById("uploadDesc").value.trim();
+    const status = document.getElementById("uploadStatus");
 
-      if (pass !== "ivo11111986") return status.textContent = "❌ Pogrešna lozinka!";
-      if (!file) return status.textContent = "⚠️ Odaberi sliku.";
+    if (pass !== "ivo11111986") {
+      status.textContent = "❌ Pogrešna lozinka!";
+      return;
+    }
+    if (!file) {
+      status.textContent = "⚠️ Odaberi sliku.";
+      return;
+    }
 
-      status.textContent = "⏳ Učitavam...";
-      const base64 = await toBase64(file);
+    status.textContent = "⏳ Učitavam...";
+    const base64 = await toBase64(file);
 
-      const payload = {
-        event_type: "upload_image",
-        client_payload: {
-          image_name: file.name,
-          image_desc: desc || "",
-          image_base64: base64.split(",")[1]
-        }
-      };
+    const payload = {
+      image_name: file.name,
+      image_desc: desc || "",
+      image_base64: base64.split(",")[1]
+    };
 
-      await fetch("https://api.github.com/repos/artboxmb/artboxmb/dispatches", {
+    try {
+      const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev", {
         method: "POST",
-        headers: {
-          "Accept": "application/vnd.github+json",
-          "Authorization": "Bearer TOKEN_UPLOAD",
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
-      status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
-      document.getElementById("uploadFile").value = "";
-      document.getElementById("uploadDesc").value = "";
-    });
-
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-      });
+      const text = await res.text();
+      if (res.ok) {
+        status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
+      } else {
+        status.textContent = `⚠️ Greška: ${text}`;
+      }
+    } catch (err) {
+      status.textContent = "❌ Greška pri spajanju na server.";
+      console.error(err);
     }
 
-    lightbox.option({
-      resizeDuration: 200,
-      wrapAround: true,
-      alwaysShowNavOnTouchDevices: true,
-      showImageNumberLabel: false,
+    document.getElementById("uploadFile").value = "";
+    document.getElementById("uploadDesc").value = "";
+  });
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
     });
-  </script>
+  }
+
+  lightbox.option({
+    resizeDuration: 200,
+    wrapAround: true,
+    alwaysShowNavOnTouchDevices: true,
+    showImageNumberLabel: false,
+  });
+</script>
+
 </body>
 </html>
+
 
