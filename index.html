@@ -84,20 +84,27 @@
       <div id="gallery-container" class="gallery-container"></div>
     </section>
 
-    <aside id="contact-sidebar">
-      <h2>Kontakt</h2>
-      <form action="mailto:artboxmb@gmail.com" method="post" enctype="text/plain">
-        <label>Ime i prezime:</label>
-        <input type="text" name="Ime" required />
-        <label>Broj telefona:</label>
-        <input type="tel" name="Telefon" />
-        <label>Email adresa:</label>
-        <input type="email" name="Email" required />
-        <label>Poruka:</label>
-        <textarea name="Poruka" rows="4" required></textarea>
-        <button type="submit">Pošalji poruku</button>
-      </form>
-    </aside>
+<!-- 🔹 KONTAKT OBRAZAC -->
+<aside id="contact-sidebar">
+  <h2>Kontakt</h2>
+  <form id="contactForm">
+    <label>Ime i prezime:</label>
+    <input type="text" name="Ime" required />
+
+    <label>Broj telefona:</label>
+    <input type="tel" name="Telefon" />
+
+    <label>Email adresa:</label>
+    <input type="email" name="Email" required />
+
+    <label>Poruka:</label>
+    <textarea name="Poruka" rows="4" required></textarea>
+
+    <button type="submit">Pošalji poruku</button>
+  </form>
+  <p id="formStatus" style="margin-top:10px; font-weight:bold;"></p>
+</aside>
+
   </section>
 
   <footer>
@@ -205,5 +212,37 @@
     showImageNumberLabel: false,
   });
 </script>
+  <!-- 🔹 EMAILJS INTEGRACIJA -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("esz6-yE_k9uHLQtoY"); // tvoj public key
+  })();
+
+  document.getElementById("contactForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const status = document.getElementById("formStatus");
+    status.textContent = "⏳ Šaljem poruku...";
+
+    const data = {
+      ime: this.Ime.value,
+      telefon: this.Telefon.value,
+      email: this.Email.value,
+      poruka: this.Poruka.value
+    };
+
+    emailjs.send("service_ID", "template_ID", data) // 🔸 zamijeni s tvojim vrijednostima
+      .then(() => {
+        status.textContent = "✅ Poruka uspješno poslana! Hvala na javljanju.";
+        this.reset();
+      })
+      .catch(err => {
+        status.textContent = "❌ Greška pri slanju: " + err.text;
+        console.error(err);
+      });
+  });
+</script>
 </body>
 </html>
+
