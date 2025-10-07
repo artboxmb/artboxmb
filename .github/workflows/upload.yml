@@ -1,4 +1,4 @@
-name: Upload slika
+name: Upload Image to Repository
 
 on:
   repository_dispatch:
@@ -8,19 +8,21 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Decode and save image
         run: |
-          echo "${{ github.event.client_payload.image_base64 }}" | base64 -d > "${{ github.event.client_payload.image_name }}"
+          mkdir -p new_uploads
+          echo "${{ github.event.client_payload.image_base64 }}" | base64 --decode > "new_uploads/${{ github.event.client_payload.image_name }}"
+          echo "Opis slike: ${{ github.event.client_payload.image_desc }}" > "new_uploads/${{ github.event.client_payload.image_name }}.txt"
 
-      - name: Commit and push image
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_UPLOAD }}
+      - name: Commit and push
         run: |
-          git config user.name "ArtBox AutoUploader"
-          git config user.email "actions@github.com"
-          git add "${{ github.event.client_payload.image_name }}"
-          git commit -m "📸 Nova slika: ${{ github.event.client_payload.image_name }} - ${{ github.event.client_payload.image_desc }}" || echo "No changes"
+          git config user.name "ArtBox Bot"
+          git config user.email "artboxmb@gmail.com"
+          mv new_uploads/* ./
+          rm -rf new_uploads
+          git add .
+          git commit -m "📸 Nova slika: ${{ github.event.client_payload.image_name }}" || echo "No changes"
           git push
