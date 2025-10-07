@@ -12,157 +12,32 @@
   <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet" />
 
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background-color: #f7f1e6;
-      color: #4b3f2f;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      text-align: center;
-      background: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
-      padding: 40px 20px;
-    }
-
-    .header-content h1 {
-      font-size: 2.5em;
-      margin: 0;
-      font-family: "Brush Script MT", cursive;
-      color: #3a2b1a;
-    }
-
+    body { font-family: "Poppins", sans-serif; background-color: #f7f1e6; color: #4b3f2f; margin: 0; padding: 0; }
+    header { text-align: center; background: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); padding: 40px 20px; }
+    .header-content h1 { font-size: 2.5em; margin: 0; font-family: "Brush Script MT", cursive; color: #3a2b1a; }
     .subtitle { font-size: 1.2em; margin-bottom: 5px; }
-
-    .highlight {
-      background-color: #d4b483;
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .fb-button {
-      display: inline-block;
-      margin-top: 10px;
-      background-color: #4b3f2f;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
+    .highlight { background-color: #d4b483; display: inline-block; padding: 6px 12px; border-radius: 5px; font-weight: bold; }
+    .fb-button { display: inline-block; margin-top: 10px; background-color: #4b3f2f; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; }
     .fb-button:hover { background-color: #6a563f; }
 
-    /* 🔹 Gumb na vrh */
-    #toTopBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #4b3f2f;
-      color: white;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: none;
-      font-weight: bold;
-      z-index: 99;
-    }
-
+    #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: #4b3f2f; color: white; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; display: none; font-weight: bold; z-index: 99; }
     #toTopBtn:hover { background-color: #6a563f; }
 
-    h2 { text-align: center; margin-top: 40px; color: #3a2b1a; }
-
-    #main-content {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      padding: 20px;
-      gap: 20px;
-    }
-
+    #main-content { display: flex; flex-wrap: wrap; align-items: flex-start; padding: 20px; gap: 20px; }
     #gallery { flex: 3; min-width: 300px; }
+    .gallery-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; justify-items: center; }
+    .gallery-container img { width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
+    .gallery-container img:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(0,0,0,0.25); }
 
-    .gallery-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 15px;
-      justify-items: center;
-    }
+    #contact-sidebar { flex: 1; min-width: 280px; position: sticky; top: 20px; background-color: #fffaf3; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); height: fit-content; }
+    footer { text-align: center; padding: 20px; background-color: #e8dcc5; color: #3a2b1a; margin-top: 40px; font-size: 0.95em; }
 
-    .gallery-container img {
-      width: 100%;
-      max-width: 300px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      cursor: pointer;
-    }
-
-    .gallery-container img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-    }
-
-    #contact-sidebar {
-      flex: 1;
-      min-width: 280px;
-      position: sticky;
-      top: 20px;
-      background-color: #fffaf3;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      height: fit-content;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #e8dcc5;
-      color: #3a2b1a;
-      margin-top: 40px;
-      font-size: 0.95em;
-    }
-
-    @media (max-width: 900px) {
-      #main-content { flex-direction: column; }
-      #contact-sidebar { position: static; width: 90%; margin: 0 auto; }
-    }
-
-    /* 🔹 Upload forma */
-    #upload-section {
-      background-color: #fff8eb;
-      margin: 50px auto;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 500px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-      text-align: center;
-    }
-
-    #upload-section input, #upload-section textarea {
-      width: 90%;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    #upload-section button {
-      background-color: #4b3f2f;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
+    #upload-section { background-color: #fff8eb; margin: 50px auto; padding: 20px; border-radius: 12px; max-width: 500px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); text-align: center; }
+    #upload-section input, #upload-section textarea { width: 90%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; }
+    #upload-section button { background-color: #4b3f2f; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
     #upload-section button:hover { background-color: #6a563f; }
+
+    @media (max-width: 900px) { #main-content { flex-direction: column; } #contact-sidebar { position: static; width: 90%; margin: 0 auto; } }
   </style>
 </head>
 
@@ -186,17 +61,23 @@
     <p id="uploadStatus"></p>
   </section>
 
+  <!-- 🔹 Galerija -->
   <section id="main-content">
-    <!-- 🔸 Galerija (tvoja ostaje ista) -->
     <section id="gallery">
       <h2>Galerija</h2>
       <div class="gallery-container">
-        <!-- sve tvoje postojeće slike ostaju ovdje -->
-        <!-- (nisam ih brisao) -->
+        <!-- 🔸 Automatski učitane slike iz repozitorija -->
+        <a href="srce.jpg" data-lightbox="artbox" data-title="Drveno srce s postoljem"><img src="srce.jpg" alt="Drveno srce s postoljem"></a>
+        <a href="sat.jpg" data-lightbox="artbox" data-title="Sat s motivom Svetog Jurja"><img src="sat.jpg" alt="Sat s motivom Svetog Jurja"></a>
+        <a href="boca.jpg" data-lightbox="artbox" data-title="Personalizirana boca"><img src="boca.jpg" alt="Personalizirana boca"></a>
+        <a href="daska za mezu.jpg" data-lightbox="artbox" data-title="Daska za posluživanje"><img src="daska za mezu.jpg" alt="Daska za posluživanje"></a>
+        <a href="posljednja vecera.jpg" data-lightbox="artbox" data-title="Posljednja večera"><img src="posljednja vecera.jpg" alt="Posljednja večera"></a>
+        <a href="sveti anto.jpg" data-lightbox="artbox" data-title="Sveti Anto"><img src="sveti anto.jpg" alt="Sveti Anto"></a>
+        <a href="sveti franjo.jpg" data-lightbox="artbox" data-title="Sveti Franjo"><img src="sveti franjo.jpg" alt="Sveti Franjo"></a>
+        <a href="sveti ivo.jpg" data-lightbox="artbox" data-title="Sveti Ivo"><img src="sveti ivo.jpg" alt="Sveti Ivo"></a>
       </div>
     </section>
 
-    <!-- 🔸 Kontakt forma -->
     <aside id="contact-sidebar">
       <h2>Kontakt</h2>
       <form action="mailto:artboxmb@gmail.com" method="post" enctype="text/plain">
@@ -222,31 +103,24 @@
 
   <button id="toTopBtn" onclick="scrollToTop()">⬆ Na vrh</button>
 
-  <!-- ✅ Lightbox + swipe -->
   <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 
   <script>
-    // 🔹 Scroll na vrh
+    // Gumb "Na vrh"
     const toTopBtn = document.getElementById("toTopBtn");
     window.onscroll = () => toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
     function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
 
-    // 🔹 Upload slika
+    // Upload slike
     document.getElementById("uploadBtn").addEventListener("click", async () => {
       const pass = document.getElementById("uploadPass").value.trim();
       const file = document.getElementById("uploadFile").files[0];
       const desc = document.getElementById("uploadDesc").value.trim();
       const status = document.getElementById("uploadStatus");
 
-      if (pass !== "ivo11111986") {
-        status.textContent = "❌ Pogrešna šifra!";
-        return;
-      }
-      if (!file) {
-        status.textContent = "⚠️ Odaberi sliku.";
-        return;
-      }
+      if (pass !== "ivo11111986") return status.textContent = "❌ Pogrešna šifra!";
+      if (!file) return status.textContent = "⚠️ Odaberi sliku.";
 
       status.textContent = "⏳ Učitavam...";
       const base64 = await toBase64(file);
@@ -264,7 +138,7 @@
         method: "POST",
         headers: {
           "Accept": "application/vnd.github+json",
-          "Authorization": "Bearer GITHUB_TOKEN_UPLOAD", // GitHub Actions koristi secret
+          "Authorization": "Bearer TOKEN_UPLOAD",
           "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
