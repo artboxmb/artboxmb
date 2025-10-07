@@ -2,423 +2,54 @@
 <html lang="hr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArtBox MB – unikatni pokloni od drveta</title>
-
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Lightbox2 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artbox</title>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      background-color: #f7f1e6;
-      color: #4b3f2f;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
+      font-family: Arial, sans-serif;
+      background: #fdfaf5;
+      color: #333;
       text-align: center;
-      background: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
-      padding: 40px 20px;
+      padding: 30px;
     }
-
-    .header-content h1 {
-      font-size: 2.5em;
-      margin: 0;
-      font-family: "Brush Script MT", cursive;
-      color: #3a2b1a;
+    h1 {
+      color: #a07142;
+      font-size: 48px;
+      margin-bottom: 10px;
     }
-
-    .subtitle {
-      font-size: 1.2em;
-      margin-bottom: 5px;
+    p {
+      font-size: 20px;
     }
-
-    .highlight {
-      background-color: #d4b483;
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    .fb-button {
-      display: inline-block;
-      margin-top: 10px;
-      background-color: #4b3f2f;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .fb-button:hover {
-      background-color: #6a563f;
-    }
-
-    h2 {
-      text-align: center;
-      margin-top: 40px;
-      color: #3a2b1a;
-    }
-
-    /* 🔹 GLAVNI LAYOUT */
-    #main-content {
+    .gallery {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start;
-      padding: 20px;
-      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
     }
-
-    /* 🔹 GALERIJA */
-    #gallery {
-      flex: 3;
-      min-width: 300px;
-    }
-
-    .gallery-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 15px;
-      justify-items: center;
-    }
-
-    .gallery-container img {
-      width: 100%;
-      max-width: 300px;
+    .gallery img {
+      width: 250px;
+      margin: 10px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      cursor: pointer;
+      box-shadow: 0 0 5px #ccc;
+      transition: transform 0.3s;
     }
-
-    .gallery-container img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-    }
-
-    /* 🔹 KONTAKT SA STRANE */
-    #contact-sidebar {
-      flex: 1;
-      min-width: 280px;
-      position: sticky;
-      top: 20px;
-      background-color: #fffaf3;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      height: fit-content;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #4b3f2f;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #6a563f;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #e8dcc5;
-      color: #3a2b1a;
-      margin-top: 40px;
-      font-size: 0.95em;
-    }
-
-    footer a {
-      color: #3a2b1a;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* 🔹 Na mobitelu forma ide ispod galerije */
-    @media (max-width: 900px) {
-      #main-content {
-        flex-direction: column;
-      }
-
-      #contact-sidebar {
-        position: static;
-        width: 90%;
-        margin: 0 auto;
-      }
+    .gallery img:hover {
+      transform: scale(1.08);
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <div class="header-content">
-      <h1>ArtBox MB</h1>
-      <p class="subtitle">Unikatni pokloni od drveta</p>
-      <p class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</p>
-      <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="fb-button">
-        Pogledaj na Facebooku
-      </a>
-    </div>
-  </header>
+  <h1>Artbox</h1>
+  <p>Unikatni proizvodi od drveta izrađeni laserskom tehnikom – slike, satovi, privjesci, boce, daske i još mnogo toga.</p>
 
-  <section id="main-content">
-    <!-- 🔸 Galerija -->
-    <section id="gallery">
-      <h2>Galerija</h2>
-      <div class="gallery-container">
-        <!-- Ovdje ostavi svoje slike -->
-         <a href="images/srce.jpg" data-lightbox="artbox" data-title="Drveno srce s postoljem">
-        <img src="images/srce.jpg" alt="Drveno srce s postoljem" />
-      </a>
-
-      <a href="images/sat.jpg" data-lightbox="artbox" data-title="Sat s motivom Svetog Jurja">
-        <img src="images/sat.jpg" alt="Sat s motivom Svetog Jurja" />
-      </a>
-
-      <a href="images/zahvalnica.jpg" data-lightbox="artbox" data-title="Drvena zahvalnica">
-        <img src="images/zahvalnica.jpg" alt="Drvena zahvalnica" />
-      </a>
-
-      <a href="images/boca.jpg" data-lightbox="artbox" data-title="Personalizirana boca">
-        <img src="images/boca.jpg" alt="Personalizirana boca" />
-      </a>
-       <a href="images/boca1.jfif" data-lightbox="artbox" data-title="Personalizirana boca">
-        <img src="images/boca1.jfif" alt="Personalizirana boca" />
-     </a>
-     <a href="images/boca2.jfif" data-lightbox="artbox" data-title="Personalizirana boca">
-        <img src="images/boca2.jfif" alt="Personalizirana boca" />
-      </a>
-      <a href="images/posljednja vecera.jpg" data-lightbox="artbox" data-title="Posljednja večera">
-        <img src="images/posljednja vecera.jpg" alt="Posljednja veÄŤera" />
-     </a>
-
-      <a href="images/boze blagoslovi.jpg" data-lightbox="artbox" data-title="Božee blagoslovi">
-        <img src="images/boze blagoslovi.jpg" alt="Bože blagoslovi" />
-        </a>
-
-      <a href="images/boze blagoslovi1.jpg" data-lightbox="artbox" data-title="Bože blagoslovi">
-        <img src="images/boze blagoslovi1.jpg" alt="BoĹľe blagoslovi" />
-   </a>
-
-      <a href="images/boze blagoslovi2.jfif" data-lightbox="artbox" data-title="Bože blagoslovi">
-        <img src="images/boze blagoslovi2.jfif" alt="Bože blagoslovi" />
-  </a>
- <a href="images/daska za mezu.jpg" data-lightbox="artbox" data-title="Daska za posluživanje">
-        <img src="images/daska za mezu.jpg" alt="Daska za posluživanje" />
-  </a>
- <a href="images/daska za posluzivanje1.jpg" data-lightbox="artbox" data-title="Daska za posluživanje">
-        <img src="images/daska za posluzivanje1.jpg" alt="Daska za posluživanje" />
-  </a>
- <a href="images/drveni privjesak.jpg" data-lightbox="artbox" data-title="Drveni privjesak">
-        <img src="images/drveni privjesak.jpg" alt="Drveni privjesak" />
-  </a>
- <a href="images/kutije.jpg" data-lightbox="artbox" data-title="Kutije raznih dimenzija">
-        <img src="images/kutije.jpg" alt="Kutije raznih dimenzija" />
-  </a>
- <a href="images/natpisi za kamin.jpg" data-lightbox="artbox" data-title="Natpisi za kamina">
-        <img src="images/natpisi za kamin.jpg" alt="Natpisi za kamina" />
-  </a>
- <a href="images/natpis za kamin1.jpg" data-lightbox="artbox" data-title="Natpisi za kamina">
-        <img src="images/natpis za kamin1.jpg" alt="Natpisi za kamina" />
-  </a>
-<a href="images/personalizirani radovi.jpg" data-lightbox="artbox" data-title="Personalizirani radovi">
-        <img src="images/personalizirani radovi.jpg" alt="Personalizirani radovi" />
-  </a>
-<a href="images/slika.jfif" data-lightbox="artbox" data-title="Slika po naruđbi">
-        <img src="images/slika.jfif" alt="Slika po naruđbi" />
-  </a>
-<a href="images/grb obitelji.jpg" data-lightbox="artbox" data-title="Obiteljski grb">
-        <img src="images/grb obitelji.jpg" alt="Obiteljski grb" />
-  </a>
-<a href="images/grb.jpg" data-lightbox="artbox" data-title="Grb grada">
-        <img src="images/grb.jpg" alt="Grb grada" />
-  </a>
- <a href="images/privjesak.jpg" data-lightbox="artbox" data-title="Drveni privjesak">
-        <img src="images/privjesak.jpg" alt="Drveni privjesak" />
-  </a>
- <a href="images/privjesci1.jpg" data-lightbox="artbox" data-title="Drveni privjesci">
-        <img src="images/privjesci1.jpg" alt="Drveni privjesci" />
-  </a>
- <a href="images/sretan rođendan.jpg" data-lightbox="artbox" data-title="Sretan rođendan">
-        <img src="images/sretan rođendan.jpg" alt="Sretan rođendan" />
-  </a>
- <a href="images/stalak za mafine.jpg" data-lightbox="artbox" data-title="Stalak za mafine">
-        <img src="images/stalak za mafine.jpg" alt="Stalak za mafine" />
-  </a>
- <a href="images/stalak za mafine1.jpg" data-lightbox="artbox" data-title="Stalak za mafine">
-        <img src="images/stalak za mafine1.jpg" alt="Stalak za mafine" />
-  </a>
- <a href="images/sveti anto.jpg" data-lightbox="artbox" data-title="Sveti Anto">
-        <img src="images/sveti anto.jpg" alt="Sveti anto" />
-  </a>
- <a href="images/sveti franjo.jpg" data-lightbox="artbox" data-title="Sveti Franjo">
-        <img src="images/sveti franjo.jpg" alt="Sveti franjo" />
-  </a>
-<a href="images/sveti ivo.jpg" data-lightbox="artbox" data-title="Sveti Ivo">
-        <img src="images/sveti ivo.jpg" alt="Sveti Ivo" />
-  </a>
-<a href="images/sveti ivo1.jpg" data-lightbox="artbox" data-title="Sveti Ivo">
-        <img src="images/sveti ivo1.jpg" alt="Sveti Ivo" />
-  </a>
-<a href="images/sveti padre pio.jpg" data-lightbox="artbox" data-title="Sveti Padre Pio">
-        <img src="images/sveti padre pio.jpg" alt="Sveti Padre Pio" />
-  </a>
-
-      </div>
-    </section>
-
-    <!-- 🔸 Kontakt forma sa strane -->
-    <aside id="contact-sidebar">
-      <h2>Kontakt</h2>
-      <form action="mailto:artboxmb@gmail.com" method="post" enctype="text/plain">
-        <label for="name">Ime i prezime:</label>
-        <input type="text" id="name" name="Ime" required />
-
-        <label for="phone">Broj telefona:</label>
-        <input type="tel" id="phone" name="Telefon" />
-
-        <label for="email">Email adresa:</label>
-        <input type="email" id="email" name="Email" required />
-
-        <label for="message">Poruka:</label>
-        <textarea id="message" name="Poruka" rows="4" required></textarea>
-
-        <button type="submit">Pošalji poruku</button>
-      </form>
-    </aside>
-  </section>
-
-  <section id="about">
-    <h2>O nama</h2>
-    <p style="max-width: 800px; margin: 0 auto; text-align: center">
-      U ArtBox MB radionici svaka daska, slika ili sat izrađeni su s pažnjom, toplinom i ljubavlju prema drvetu.
-      Kombiniram ručni rad i preciznost laserskog graviranja kako bih stvorila unikatne poklone koji traju godinama.
-      Svaki komad izrađujem po želji kupca – pošaljite svoju ideju, a ja ću je pretvoriti u stvarnost.
-    </p>
-  </section>
-  <!-- 🔹 Upload sekcija -->
-<section id="upload-section" style="text-align:center; padding:40px 20px;">
-  <h2>Dodaj novu sliku</h2>
-  <button id="show-upload" style="
-    background-color:#8b5e34;
-    color:white;
-    border:none;
-    padding:10px 20px;
-    border-radius:6px;
-    font-weight:bold;
-    cursor:pointer;">➕ Dodaj sliku</button>
-
-  <div id="upload-form" style="display:none; margin-top:20px; max-width:400px; margin-left:auto; margin-right:auto; background:#fffaf3; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-    <label for="password">Unesi šifru:</label>
-    <input type="password" id="password" placeholder="Unesi šifru za pristup" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px;" />
-
-    <label for="image">Odaberi sliku:</label>
-    <input type="file" id="image" accept="image/*" style="width:100%; padding:8px; margin-bottom:10px;" />
-
-    <label for="description">Opis slike:</label>
-    <textarea id="description" rows="3" placeholder="Napiši opis slike" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;"></textarea>
-
-    <button id="submit-upload" style="
-      background-color:#8b5e34;
-      color:white;
-      border:none;
-      padding:10px 20px;
-      border-radius:6px;
-      font-weight:bold;
-      cursor:pointer;">📤 Pošalji</button>
-
-    <p id="upload-status" style="color:#8b5e34; margin-top:10px;"></p>
+  <div class="gallery">
+    <img src="boca.jpg" alt="Boca">
+    <img src="boze blagoslovi.jpg" alt="Blagoslov">
+    <img src="daska za mezu.jpg" alt="Daska za mezu">
+    <img src="drveni privjesak.jpg" alt="Privjesak">
+    <img src="Slika.jfif" alt="Slika">
   </div>
-</section>
 
-<script>
-  const uploadBtn = document.getElementById("show-upload");
-  const uploadForm = document.getElementById("upload-form");
-  const passwordInput = document.getElementById("password");
-  const submitUpload = document.getElementById("submit-upload");
-  const uploadStatus = document.getElementById("upload-status");
-
-  uploadBtn.addEventListener("click", () => {
-    uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
-  });
-
-  submitUpload.addEventListener("click", (e) => {
-    e.preventDefault();
-    const password = passwordInput.value.trim();
-    if (password !== "ivo11111986") {
-      uploadStatus.textContent = "❌ Pogrešna šifra. Pristup odbijen.";
-      uploadStatus.style.color = "red";
-      return;
-    }
-
-    const file = document.getElementById("image").files[0];
-    const desc = document.getElementById("description").value.trim();
-
-    if (!file || !desc) {
-      uploadStatus.textContent = "⚠️ Odaberi sliku i napiši opis.";
-      uploadStatus.style.color = "orange";
-      return;
-    }
-
-    // Za sada samo prikaz poruke
-    uploadStatus.textContent = `✅ Slika "${file.name}" i opis su pripremljeni. (Upload bi se ovdje obradio na serveru)`;
-    uploadStatus.style.color = "#2e7d32";
-  });
-</script>
-
-  <footer>
-    <p>📍 Kralja Tvrtka, Vitez, Bosna i Hercegovina</p>
-    <p>📞 063 124 574 | ✉️ <a href="mailto:artboxmb@gmail.com">artboxmb@gmail.com</a></p>
-    <p>🌐 <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank">Facebook ArtBox</a></p>
-    <p>© 2025 ArtBox MB – ručni rad s dušom</p>
-  </footer>
-
-  <!-- ✅ JS: Lightbox + swipe podrška -->
-  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
-  <script>
-    lightbox.option({
-      resizeDuration: 200,
-      wrapAround: true,
-      alwaysShowNavOnTouchDevices: true,
-      showImageNumberLabel: false,
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const hammer = new Hammer(document.body);
-      hammer.on("swipeleft", () => document.querySelector(".lb-next")?.click());
-      hammer.on("swiperight", () => document.querySelector(".lb-prev")?.click());
-    });
-  </script>
+  <p>Kontakt: <a href="mailto:artbox@gmail.com">artbox@gmail.com</a></p>
 </body>
 </html>
