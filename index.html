@@ -210,9 +210,6 @@
 
   <button id="toTopBtn" onclick="scrollToTop()">⬆ Na vrh</button>
 
-  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 
@@ -265,7 +262,7 @@
       const text = await res.text();
       if (res.ok) {
         status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
-        await loadUploadedImages(true); // odmah učitaj novu sliku
+        await loadUploadedImages(true);
       } else {
         status.textContent = `⚠️ Greška: ${text}`;
       }
@@ -291,19 +288,12 @@
   async function loadUploadedImages(refresh = false) {
     try {
       const gallery = document.querySelector(".gallery-container");
-
-      if (refresh) {
-        gallery.innerHTML = ""; // ako je nova slika dodana — očisti i ponovno učitaj sve
-      }
+      if (refresh) gallery.innerHTML = ""; // osvježi samo kad se doda nova slika
 
       const res = await fetch("https://api.github.com/repos/artboxmb/artboxmb/contents/uploads");
       const files = await res.json();
 
-      // Filtriraj samo slike
-      const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|jfif)$/i));
-
-      // Najnovije slike prve
-      images.reverse();
+      const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|jfif)$/i)).reverse();
 
       for (const img of images) {
         const imgUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}`;
@@ -338,6 +328,7 @@
 
 </body>
 </html>
+
 
 
 
