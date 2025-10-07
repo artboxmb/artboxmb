@@ -118,105 +118,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
 
-<script>
-  const toTopBtn = document.getElementById("toTopBtn");
-  window.onscroll = () => toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
-  function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
-
-  const openModal = document.getElementById("openUploadModal");
-  const closeModal = document.getElementById("closeUploadModal");
-  const modal = document.getElementById("uploadModal");
-  openModal.addEventListener("click", () => modal.style.display = "flex");
-  closeModal.addEventListener("click", () => modal.style.display = "none");
-  window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
-
-  document.getElementById("uploadBtn").addEventListener("click", async () => {
-    const pass = document.getElementById("uploadPass").value.trim();
-    const file = document.getElementById("uploadFile").files[0];
-    const desc = document.getElementById("uploadDesc").value.trim();
-    const status = document.getElementById("uploadStatus");
-
-    if (pass !== "ivo11111986") return status.textContent = "❌ Pogrešna lozinka!";
-    if (!file) return status.textContent = "⚠️ Odaberi sliku.";
-
-    status.textContent = "⏳ Učitavam...";
-    const base64 = await toBase64(file);
-    const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
-
-    try {
-      const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const text = await res.text();
-      if (res.ok) {
-        status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
-        await loadUploadedImages(true);
-      } else status.textContent = `⚠️ Greška: ${text}`;
-    } catch {
-      status.textContent = "❌ Greška pri spajanju na server.";
-    }
-  });
-
-  function toBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-    });
-  }
-
-  async function loadUploadedImages(refresh = false) {
-    try {
-      const gallery = document.getElementById("gallery-container");
-      if (refresh) gallery.innerHTML = "";
-
-      const res = await fetch("https://api.github.com/repos/artboxmb/artboxmb/contents/uploads");
-      const files = await res.json();
-      const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|jfif)$/i)).reverse();
-
-      for (const img of images) {
-        const imgUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}`;
-        const descUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}.txt`;
-
-        let opis = img.name;
-        try {
-          const descRes = await fetch(descUrl);
-          if (descRes.ok) opis = await descRes.text();
-        } catch {}
-
-        const a = document.createElement("a");
-        a.href = imgUrl;
-        a.setAttribute("data-lightbox", "artbox");
-        a.setAttribute("data-title", opis.trim());
-
-        const imageEl = document.createElement("img");
-        imageEl.src = imgUrl;
-        imageEl.alt = opis.trim();
-
-        a.appendChild(imageEl);
-        gallery.appendChild(a);
-      }
-    } catch (err) {
-      console.error("❌ Greška pri učitavanju slika:", err);
-    }
-  }
-
-  window.addEventListener("DOMContentLoaded", loadUploadedImages);
-
-  lightbox.option({
-    resizeDuration: 200,
-    wrapAround: true,
-    showImageNumberLabel: false,
-  });
-</script>
-  <!-- 🔹 EMAILJS INTEGRACIJA -->
+<!-- 🔹 EMAILJS INTEGRACIJA -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
   (function(){
-    emailjs.init("esz6-yE_k9uHLQtoY"); // tvoj public key
+    emailjs.init("esz6-yE_k9uHLQtoY"); // ✅ Public key
   })();
 
   document.getElementById("contactForm").addEventListener("submit", function(e) {
@@ -232,10 +138,18 @@
       poruka: this.Poruka.value
     };
 
-    emailjs.send("service_ID", "template_ID", data) // 🔸 zamijeni s tvojim vrijednostima
+    // 🔸 Slanje poruke tebi
+    emailjs.send("service_z1edus4", "template_oir8m86", data)
       .then(() => {
         status.textContent = "✅ Poruka uspješno poslana! Hvala na javljanju.";
         this.reset();
+
+        // 🔸 Automatski odgovor pošiljatelju
+        emailjs.send("service_z1edus4", "template_oir8m86", {
+          ime: data.ime,
+          email: data.email,
+          poruka: "Hvala na poruci! Vaša poruka je primljena, javit ćemo se uskoro. 🌿"
+        });
       })
       .catch(err => {
         status.textContent = "❌ Greška pri slanju: " + err.text;
@@ -245,4 +159,3 @@
 </script>
 </body>
 </html>
-
