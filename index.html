@@ -25,12 +25,15 @@
     a{ color: inherit; text-decoration:none }
 
     /* Header */
-    header {
-      position: sticky; top: 0; z-index: 50;
-      backdrop-filter: blur(6px);
-      background: linear-gradient(180deg, rgba(247,241,230,.92), rgba(247,241,230,.85)) url("https://www.transparenttextures.com/patterns/wood-pattern.png");
-      border-bottom: 1px solid #e9dfcc;
-    }
+  header {
+  position: static;             /* ⇦ više nije zalijepljen */
+  z-index: 1;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(247,241,230,.92), rgba(247,241,230,.85)) url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+  border-bottom: 1px solid #e9dfcc;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04); /* blagi shadow da izgleda uredno dok skrola */
+     }
+
     .header-inner{
       max-width: 1200px; margin: 0 auto; padding: 14px 18px;
       display:flex; align-items:center; gap:14px; justify-content:center;
@@ -381,3 +384,4 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
+
