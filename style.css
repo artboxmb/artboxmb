@@ -19,6 +19,14 @@ h1 {
   margin-bottom: 0;
   color: #3b2d1f;
 }
+/* Lightbox strelice malo veće i uvijek vidljive na mobu */
+.lb-nav a { width: 22% !important; opacity: 1 !important; }
+
+/* Footer mail kao “pill” i tamniji */
+footer a[href^="mailto:"]{
+  background:#fff1d7; color:#2a1405; padding:2px 8px; border-radius:8px; font-weight:700;
+}
+
 
 .subtitle {
   font-size: 20px;
@@ -194,3 +202,4 @@ footer a:hover {
     width: 90%;
   }
 }
+
