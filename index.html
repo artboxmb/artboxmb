@@ -10,7 +10,6 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="logo.jpg" />
   <meta property="og:url" content="https://artboxmb.github.io/artboxmb/" />
-
   <link rel="icon" type="image/png" href="grb.jpg" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet" />
@@ -37,21 +36,21 @@
       max-width: 1200px; margin: 0 auto; padding: 14px 18px;
       display:flex; align-items:center; gap:14px; justify-content:center;
     }
-    .logo{ width:140px; height:140px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
+    .logo{ width:160px; height:160px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
     .brand{ text-align:center; }
-    .brand h1 { font-size: 2.4em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
-    .subtitle { font-size: 1.05em; margin: 2px 0 6px; opacity:.9 }
+    .brand h1 { font-size: 2.6em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
+    .subtitle { font-size: 1.08em; margin: 2px 0 6px; opacity:.9 }
     .highlight { background-color: var(--accent); display: inline-block; padding: 6px 12px; border-radius: 10px; font-weight: 600; }
     .header-actions{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
     .btn { display:inline-block; background-color: var(--brown); color:#fff; padding:10px 16px; border-radius:12px; font-weight:700; border:0; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.08)}
     .btn:hover { background-color: var(--brown-2); }
 
     /* Layout */
-    #main-content { max-width:1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 320px; gap: 20px; padding: 0 18px; }
+    #main-content { max-width:1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 340px; gap: 20px; padding: 0 18px; }
     @media (max-width: 900px) {
       #main-content { grid-template-columns: 1fr; }
       header{ position: static; }
-      .logo{ width:90px; height:90px }
+      .logo{ width:110px; height:110px }
     }
 
     /* Gallery */
@@ -79,11 +78,17 @@
     }
     .card.admin .delete-btn{ display:block; }
 
-    /* Contact box */
+    /* Kontakt kutija + info + o nama */
     #contact-sidebar { position: sticky; top: 90px; background-color: var(--card); padding: 18px; border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,.08); height: fit-content; }
-    #contact-sidebar h2{ margin-top:0 }
+    #contact-sidebar h2{ margin:0 0 10px 0 }
     #contact-sidebar input, #contact-sidebar textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:12px; background:#fff; margin:6px 0 10px; }
     #contact-sidebar button{ width:100%; }
+    .info-card,.about-card{
+      background:#fff; border-radius:14px; padding:14px; box-shadow:0 6px 14px rgba(0,0,0,.07); margin-bottom:14px;
+    }
+    .info-list{ list-style:none; padding:0; margin:0 }
+    .info-list li{ display:flex; gap:10px; align-items:flex-start; padding:6px 0 }
+    .info-list a{ color:var(--brown); font-weight:700 }
 
     /* Back to top */
     #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: var(--brown); color: white; border: none; padding: 12px 18px; border-radius: 12px; cursor: pointer; display: none; font-weight: bold; z-index: 60; }
@@ -94,7 +99,7 @@
     footer a{ color:#2a1405; font-weight:700; background:#fff1d7; padding:2px 8px; border-radius:8px }
     footer a:hover{ text-decoration:underline }
 
-    /* Modali (upload + admin) zajednički */
+    /* Modali */
     .modal { display:none; position: fixed; inset:0; background: rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
     .modal .modal-content{
       background:#fff8eb; padding:24px; border-radius:16px; width:min(520px,92%); box-shadow:0 20px 40px rgba(0,0,0,.25); text-align:center; position:relative;
@@ -107,26 +112,6 @@
     .lb-nav a.lb-prev, .lb-nav a.lb-next { opacity: 1 !important; }
     .lb-nav a { width: 20% !important; }
     .lb-data .lb-number{ display:none }
-
-    /* === DESNI ROTATOR (desktop only) === */
-    #right-rotator{
-      display:none; position:fixed; right:18px; top:140px; width:280px; height:380px;
-      background:#fff; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,.16);
-      overflow:hidden; z-index:20;
-    }
-    #right-rotator.show{ display:block; }
-    #right-rotator a{ display:block; width:100%; height:100%; position:relative }
-    #right-rotator img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .6s ease; }
-    #right-rotator img.active{ opacity:1; }
-    #right-rotator .badge{
-      position:absolute; left:10px; top:10px; background:var(--brown); color:#fff;
-      padding:6px 10px; border-radius:10px; font-weight:700; font-size:.9em;
-      box-shadow:0 6px 16px rgba(0,0,0,.18);
-    }
-    /* prikaži rotator samo na širokim ekranima */
-    @media (min-width: 1400px){
-      #right-rotator{ display:block; }
-    }
   </style>
 </head>
 
@@ -139,7 +124,8 @@
         <div class="subtitle">Unikatni pokloni od drveta</div>
         <span class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</span>
         <div class="header-actions">
-          <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="btn" rel="noopener">Pogledaj na Facebooku</a>
+          <a id="fb-link" href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="btn" rel="noopener">Pogledaj na Facebooku</a>
+          <a id="ig-link" href="https://www.instagram.com/artbox_mb/" target="_blank" class="btn" rel="noopener">Pogledaj na Instagramu</a>
           <button id="openUploadModal" class="btn" aria-label="Dodaj novu fotografiju" style="display:none">📸 Dodaj fotografiju</button>
           <button id="toggleAdmin" class="btn admin-btn" title="Uključi Admin">🔒 Admin</button>
         </div>
@@ -147,15 +133,7 @@
     </div>
   </header>
 
-  <!-- floating rotator (desna strana / desktop) -->
-  <div id="right-rotator" aria-label="Istaknute fotografije">
-    <a id="rotLink" data-lightbox="artbox" data-title="">
-      <img id="rotImg" alt="Istaknuta fotografija">
-      <span class="badge">Iz galerije</span>
-    </a>
-  </div>
-
-  <!-- Upload modal (samo za ADMIN) -->
+  <!-- Upload (samo ADMIN) -->
   <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-label="Dodavanje fotografije">
     <div class="modal-content">
       <button id="closeUploadModal" class="close" aria-label="Zatvori prozor">✖</button>
@@ -188,8 +166,18 @@
       <p id="galleryStatus"></p>
     </section>
 
-    <!-- Kontakt -->
+    <!-- DESNA STRANA: info + forma + o nama -->
     <aside id="contact-sidebar">
+      <div class="info-card">
+        <h3 style="margin:0 0 8px 0;">Kontakt informacije</h3>
+        <ul class="info-list">
+          <li>📍 <span>Kralja Tvrtka, Vitez, Bosna i Hercegovina &nbsp; <a href="https://maps.google.com/?q=Kralja+Tvrtka+Vitez" target="_blank" rel="noopener">Prikaži na karti</a></span></li>
+          <li>📞 <a href="tel:+38763124574">063 124 574</a></li>
+          <li>✉️ <a href="mailto:artboxmb@gmail.com">artboxmb@gmail.com</a></li>
+          <li>🕒 <span>Radimo po narudžbi • Odgovaramo brzo</span></li>
+        </ul>
+      </div>
+
       <h2>Kontakt</h2>
       <form id="contactForm" novalidate>
         <label>Ime i prezime:</label>
@@ -203,6 +191,16 @@
         <button type="submit" class="btn">Pošalji poruku</button>
       </form>
       <p id="formStatus" style="margin-top:10px; font-weight:bold;"></p>
+
+      <div class="about-card">
+        <h3 style="margin:0 0 8px 0;">O nama</h3>
+        <p style="margin:0">
+          <strong>ArtBOX</strong> – Ručno i laserski izrađeni unikatni proizvodi!<br/>
+          Kombinacija kreativnog ručnog rada i preciznosti laserskog graviranja. ✨<br/>
+          Graviram na staklu, drvetu, šperploči… Radim daske za rezanje, suvenire, magnetiće i još mnogo toga.
+          Ako ste zainteresirani za <strong>poslovnu suradnju</strong> – slobodno se javite!
+        </p>
+      </div>
     </aside>
   </main>
 
@@ -222,6 +220,37 @@
 /* ===== Back to top ===== */
 const toTopBtn = document.getElementById("toTopBtn");
 addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "block" : "none"; });
+
+/* ===== FB/Messenger webview: otvaraj u istom tabu (bez upozorenja) ===== */
+(function () {
+  const fbBtn = document.getElementById('fb-link');
+  const igBtn = document.getElementById('ig-link');
+  const ua = navigator.userAgent || '';
+  const inFbInApp = /FBAN|FBAV|FB_IAB|Messenger/i.test(ua);
+
+  if (fbBtn) {
+    if (inFbInApp) { // isti tab i mobilna FB web-stranica
+      fbBtn.href = 'https://m.facebook.com/profile.php?id=100064599767535';
+      fbBtn.removeAttribute('target');
+      fbBtn.rel = 'noopener noreferrer';
+    } else {
+      fbBtn.href = 'https://www.facebook.com/profile.php?id=100064599767535';
+      fbBtn.target = '_blank';
+      fbBtn.rel = 'noopener';
+    }
+  }
+  if (igBtn) {
+    if (inFbInApp) { // bez otvaranja appa
+      igBtn.href = 'https://www.instagram.com/artbox_mb/';
+      igBtn.removeAttribute('target');
+      igBtn.rel = 'noopener noreferrer';
+    } else {
+      igBtn.href = 'https://www.instagram.com/artbox_mb/';
+      igBtn.target = '_blank';
+      igBtn.rel = 'noopener';
+    }
+  }
+})();
 
 /* ===== Modals ===== */
 const uploadModal = document.getElementById("uploadModal");
@@ -345,54 +374,7 @@ async function loadUploadedImages(refresh=false){
       wrap.appendChild(card);
     });
     gStatus.textContent = "";
-
-    // pokreni desni rotator
-    initRightRotator(items);
-
   }catch(err){ console.error(err); gStatus.textContent = "❌ Greška pri učitavanju galerije."; }
-}
-
-/* ===== Desni rotator ===== */
-let _rotTimer = null;
-function initRightRotator(items){
-  const box  = document.getElementById("right-rotator");
-  const link = document.getElementById("rotLink");
-  const img  = document.getElementById("rotImg");
-  if(!box || !items || !items.length) return;
-
-  let i = 0;
-  function show(idx){
-    const it = items[idx % items.length];
-    link.href = it.src;
-    link.setAttribute("data-title", it.alt);
-    img.classList.remove("active");
-    img.onload = () => img.classList.add("active");
-    img.src = it.src; img.alt = it.alt;
-  }
-
-  clearInterval(_rotTimer);
-  show(0);
-  box.classList.add("show");
-  _rotTimer = setInterval(()=>{ i=(i+1)%items.length; show(i); }, 5000);
-
-  // pauza na hover
-  box.addEventListener("mouseenter", ()=>{ clearInterval(_rotTimer); });
-  box.addEventListener("mouseleave", ()=>{ clearInterval(_rotTimer); _rotTimer=setInterval(()=>{ i=(i+1)%items.length; show(i); }, 5000); });
-}
-
-async function deleteImage(fileName, cardEl){
-  if(!isAdmin){ alert("Uključi Admin mod."); return; }
-  if(!confirm(`Obrisati sliku: ${fileName}?`)) return;
-  try{
-    const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
-      method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ image_name: fileName, password: "ivo11111986" })
-    });
-    if(res.ok){
-      cardEl.style.opacity="0"; cardEl.style.transform="scale(.98)";
-      setTimeout(()=>cardEl.remove(), 200);
-    }else{ alert("Brisanje nije uspjelo (server)."); console.error(await res.text()); }
-  }catch(e){ alert("Greška pri spajanju na server."); console.error(e); }
 }
 
 /* Pretraga u galeriji */
