@@ -98,7 +98,7 @@
     }
     .card.admin .delete-btn{ display:block; }
 
-    /* Kontakt kutija + info + o nama */
+    /* Kontakt + info + o nama */
     #contact-sidebar { position: sticky; top: 90px; background-color: var(--card); padding: 18px; border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,.08); height: fit-content; }
     #contact-sidebar h2{ margin:0 0 10px 0 }
     #contact-sidebar input, #contact-sidebar textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:12px; background:#fff; margin:6px 0 10px; }
@@ -272,9 +272,6 @@ addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "blo
 })();
 
 /* ===== Modals ===== */
-
-// ... (ostatak koda iznad ostavi)
-
 const uploadModal = document.getElementById("uploadModal");
 const adminModal  = document.getElementById("adminModal");
 const deleteModal = document.getElementById("deleteModal");
@@ -283,21 +280,18 @@ document.getElementById("openUploadModal").onclick = () => (uploadModal.style.di
 document.getElementById("closeUploadModal").onclick = () => (uploadModal.style.display = "none");
 document.getElementById("closeAdminModal").onclick  = () => (adminModal.style.display  = "none");
 
-// ⬇️ X na delete modalu SADA uvijek zatvara (force = true)
+/* X na delete modalu – uvijek zatvori (force = true) */
 document.getElementById("closeDeleteModal").onclick = () => closeDeleteModal(true);
 
-// klik izvan sadržaja zatvara sve modale (delete modal sa force = true)
+/* klik izvan sadržaja zatvara upload/admin; za delete modal uvijek force = true */
 addEventListener("click", (e)=> {
   if (e.target === uploadModal) uploadModal.style.display = "none";
   if (e.target === adminModal)  adminModal.style.display  = "none";
   if (e.target === deleteModal) closeDeleteModal(true);
 });
 
-// ESC zatvara delete modal (uvijek)
-addEventListener("keydown", (e)=>{
-  if (e.key === "Escape") closeDeleteModal(true);
-});
-
+/* ESC zatvara delete modal (uvijek) */
+addEventListener("keydown", (e)=>{ if (e.key === "Escape") closeDeleteModal(true); });
 
 /* ===== Admin state ===== */
 let isAdmin = sessionStorage.getItem("ab_admin") === "1";
@@ -388,7 +382,7 @@ async function loadUploadedImages(refresh=false){
     items.forEach((it, i) => {
       const card = document.createElement("div");
       card.className = "card" + (isAdmin ? " admin" : "");
-      card.style.animationDelay = (i*60) + "ms"; // stagger
+      card.style.animationDelay = (i*60) + "ms";
       card.classList.add("fade-in");
       card.dataset.name = it.name;
 
@@ -416,24 +410,25 @@ async function loadUploadedImages(refresh=false){
 /* ===== Delete modal logic ===== */
 let pendingDelete = { name:null, card:null, busy:false };
 
+/* NOVA verzija – dopušta X/ESC prisilno zatvaranje (force=true) */
+function closeDeleteModal(force = false){
+  if (pendingDelete.busy && !force) return; // ne zatvaraj dok traje brisanje osim ako je force
+  deleteModal.style.display = "none";
+  pendingDelete = { name:null, card:null, busy:false };
+  document.getElementById("deleteStatus").textContent = "";
+}
+
 function openDeleteModal(fileName, cardEl){
   if(!isAdmin){ alert("Uključi Admin mod."); return; }
   pendingDelete = { name:fileName, card:cardEl, busy:false };
-  const nameEl = document.querySelector("#deleteText b");
-  nameEl.textContent = fileName;
+  document.querySelector("#deleteText b").textContent = fileName;
   document.getElementById("deleteStatus").textContent = "";
   document.getElementById("confirmDeleteBtn").disabled = false;
   document.getElementById("cancelDeleteBtn").disabled = false;
   deleteModal.style.display = "flex";
 }
 
-function closeDeleteModal(){
-  if(pendingDelete.busy) return; // spriječi zatvaranje dok traje brisanje
-  deleteModal.style.display = "none";
-  pendingDelete = { name:null, card:null, busy:false };
-}
-
-document.getElementById("cancelDeleteBtn").addEventListener("click", closeDeleteModal);
+document.getElementById("cancelDeleteBtn").addEventListener("click", () => closeDeleteModal());
 
 document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
   if(!pendingDelete.name || !pendingDelete.card || pendingDelete.busy) return;
@@ -451,12 +446,12 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async () =
     });
     if(res.ok){
       status.textContent = "✅ Obrisano.";
-      // kratka animacija uklanjanja
+      pendingDelete.busy = false; // dozvoli X/ESC
       pendingDelete.card.style.opacity="0";
       pendingDelete.card.style.transform="scale(.98)";
       setTimeout(()=>{
         pendingDelete.card.remove();
-        closeDeleteModal();
+        closeDeleteModal(true); // prisilno zatvori
       }, 220);
     }else{
       const txt = await res.text().catch(()=> "");
@@ -517,4 +512,3 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
-
