@@ -1,240 +1,507 @@
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    // CORS
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*", // po želji suzi na https://artboxmb.github.io
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
-    }
-
-    // Konstante
-    const REPO = "artboxmb/artboxmb";
-    const BRANCH = "main";
-    const token = env.TOKEN_UPLOAD;
-    if (!token) {
-      return text("❌ TOKEN_UPLOAD nije postavljen u Worker varijablama.", 500);
-    }
-
-    // ===== ROUTES =====
-    if (request.method === "GET" && url.pathname === "/health") {
-      return text("✅ Worker OK", 200);
-    }
-
-    if (request.method === "POST" && (url.pathname === "/" || url.pathname === "/upload")) {
-      return handleUpload(request, token, REPO, BRANCH, corsHeaders);
-    }
-
-    if (request.method === "POST" && url.pathname === "/delete") {
-      return handleDelete(request, token, REPO, BRANCH, env, corsHeaders);
-    }
-
-    // Default
-    return text("🌍 Worker aktivan!\nPOST /upload za upload, POST /delete za brisanje.", 200);
-
-    // ===== Helpers (lokalne) =====
-    function text(msg, status = 200) {
-      return new Response(msg, {
-        status,
-        headers: { ...corsHeaders, "Content-Type": "text/plain; charset=utf-8" },
-      });
-    }
-  },
-};
-
-/** -------------------- UPLOAD -------------------- */
-async function handleUpload(request, token, REPO, BRANCH, corsHeaders) {
-  try {
-    const body = await request.json();
-    let { image_name, image_base64, image_desc } = body || {};
-
-    if (!image_name || !image_base64) {
-      return new Response("❌ Nedostaje ime ili sadržaj slike.", { status: 400, headers: corsHeaders });
-    }
-
-    // Sigurnost: zabrani putanje
-    if (/[\\/]/.test(image_name) || image_name.includes("..")) {
-      return new Response("❌ Neispravno ime datoteke.", { status: 400, headers: corsHeaders });
-    }
-
-    // PATCH: server-side slugify (sanitize imena + ekstenzija)
-    image_name = safeFileName(image_name);
-
-    const uploadUrl = ghUrl(REPO, `uploads/${image_name}`);
-    const resImg = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: ghHeaders(token),
-      body: JSON.stringify({
-        message: `Add image: ${image_name}`,
-        content: image_base64,
-        branch: BRANCH,
-      }),
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17634789497"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-17634789497');
+  </script>
+  <!-- Event snippet for Page view conversion page -->
+  <script>
+    gtag('event', 'conversion', {
+      'send_to': 'AW-17634789497/R0kACMGkqakbEPm9QthB',
+      'value': 1.0,
+      'currency': 'USD'
     });
+  </script>
 
-    if (!resImg.ok) {
-      const err = await resImg.text();
-      return new Response(`⚠️ Greška pri uploadu slike:\n${err}`, {
-        status: resImg.status,
-        headers: corsHeaders,
-      });
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtBox MB – unikatni pokloni od drveta</title>
+  <meta name="description" content="ArtBox MB – unikatni laser-cut pokloni od drveta: slike, satovi, privjesci, magneti, daske, boce i još mnogo toga. Ručni rad s dušom." />
+  <meta property="og:title" content="ArtBox MB – unikatni pokloni od drveta" />
+  <meta property="og:description" content="Ručni rad s dušom. Pogledaj galeriju i naruči preko obrasca." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="logo.jpg" />
+  <meta property="og:url" content="https://artboxmb.github.io/artboxmb/" />
+  <link rel="icon" type="image/png" href="grb.jpg" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet" />
+
+  <style>
+    :root{
+      --brown:#4b3f2f; --brown-2:#6a563f; --cream:#f7f1e6; --card:#fffaf3; --footer:#e8dcc5;
+      --accent:#d4b483; --text:#3a2b1a;
+    }
+    *{box-sizing:border-box}
+    body { font-family: "Poppins", sans-serif; background-color: var(--cream); color: var(--text); margin: 0; }
+    a{ color: inherit; text-decoration:none }
+
+    /* Header */
+    header {
+      position: static;
+      z-index: 1;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(247,241,230,.92), rgba(247,241,230,.85)) url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+      border-bottom: 1px solid #e9dfcc;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+    .header-inner{
+      max-width: 1200px; margin: 0 auto; padding: 14px 18px;
+      display:flex; align-items:center; gap:14px; justify-content:center;
+    }
+    .logo{ width:160px; height:160px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
+    .brand{ text-align:center; }
+    .brand h1 { font-size: 2.6em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
+    .subtitle { font-size: 1.08em; margin: 2px 0 6px; opacity:.9 }
+    .highlight { background-color: var(--accent); display: inline-block; padding: 6px 12px; border-radius: 10px; font-weight: 600; }
+    .header-actions{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+    .btn { display:inline-block; background-color: var(--brown); color:#fff; padding:10px 16px; border-radius:12px; font-weight:700; border:0; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.08)}
+    .btn:hover { background-color: var(--brown-2); }
+    .btn-danger{ background:#c62828 }
+    .btn-danger:hover{ background:#ab2020 }
+    .btn-ghost{ background:#eee; color:#2a1405 }
+
+    /* Layout */
+    #main-content { max-width:1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 340px; gap: 20px; padding: 0 18px; }
+    @media (max-width: 900px) {
+      #main-content { grid-template-columns: 1fr; }
+      header{ position: static; }
+      .logo{ width:110px; height:110px }
     }
 
-    // Upis opisa u .txt (UTF-8 → base64)
-    if (image_desc && image_desc.trim() !== "") {
-      const txtUrl = ghUrl(REPO, `uploads/${image_name}.txt`);
-      const contentB64 = btoa(unescape(encodeURIComponent(image_desc)));
-      const resTxt = await fetch(txtUrl, {
-        method: "PUT",
-        headers: ghHeaders(token),
-        body: JSON.stringify({
-          message: `Add desc for ${image_name}`,
-          content: contentB64,
-          branch: BRANCH,
-        }),
-      });
-      if (!resTxt.ok) {
-        const err = await resTxt.text();
-        return new Response(`⚠️ Greška kod spremanja opisa:\n${err}`, {
-          status: resTxt.status,
-          headers: corsHeaders,
-        });
-      }
+    /* Gallery */
+    #gallery h2{ margin: 0 0 10px 2px; }
+    .toolbar{ display:flex; gap:8px; align-items:center; margin: 8px 0 14px; flex-wrap:wrap; }
+    .search{ flex:1; min-width: 240px; border:1px solid #ddd; border-radius:12px; padding:10px 12px; background:#fff; }
+    .admin-btn{ background:#8c6a46 }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+    .card {
+      position:relative; background: #fff; border-radius:16px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.06); overflow:hidden;
+      transition:.25s transform, .25s box-shadow, .25s opacity;
+      opacity:0; transform: translateY(8px);
     }
+    .card.fade-in { animation: fadeInUp .5s ease forwards; }
+    @keyframes fadeInUp { to{ opacity:1; transform: translateY(0);} }
+    .card:hover{ transform: translateY(-2px); box-shadow: 0 16px 28px rgba(0,0,0,.10);}
+    .card a{ display:block }
+    .card img { width: 100%; aspect-ratio: 1/1; height: auto; object-fit: cover; display:block; }
+    .card .caption{ padding: 8px 12px 12px; font-size:.95em }
+    .delete-btn{
+      position:absolute; top:8px; right:8px; border:0; padding:8px 10px; border-radius:10px;
+      background:#c62828; color:#fff; font-weight:700; cursor:pointer; display:none;
+      box-shadow: 0 6px 16px rgba(198,40,40,.35);
+    }
+    .card.admin .delete-btn{ display:block; }
 
-    return new Response("✅ Slika i opis uspješno spremljeni u /uploads/!", { headers: corsHeaders });
-  } catch (err) {
-    return new Response(`❌ Greška u radu Workera (upload): ${err.message}`, {
-      status: 500,
-      headers: corsHeaders,
-    });
+    /* Kontakt kutija + info + o nama */
+    #contact-sidebar { position: sticky; top: 90px; background-color: var(--card); padding: 18px; border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,.08); height: fit-content; }
+    #contact-sidebar h2{ margin:0 0 10px 0 }
+    #contact-sidebar input, #contact-sidebar textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:12px; background:#fff; margin:6px 0 10px; }
+    #contact-sidebar button{ width:100%; }
+    .info-card,.about-card{
+      background:#fff; border-radius:14px; padding:14px; box-shadow:0 6px 14px rgba(0,0,0,.07); margin-bottom:14px;
+    }
+    .info-list{ list-style:none; padding:0; margin:0 }
+    .info-list li{ display:flex; gap:10px; align-items:flex-start; padding:6px 0 }
+    .info-list a{ color:var(--brown); font-weight:700 }
+
+    /* Back to top */
+    #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: var(--brown); color: white; border: none; padding: 12px 18px; border-radius: 12px; cursor: pointer; display: none; font-weight: bold; z-index: 60; }
+    #toTopBtn:hover { background-color: var(--brown-2); }
+
+    /* Footer */
+    footer { text-align: center; padding: 26px 18px; background-color: var(--footer); color: var(--text); margin-top: 30px; font-size: 0.98em; }
+    footer a{ color:#2a1405; font-weight:700; background:#fff1d7; padding:2px 8px; border-radius:8px }
+    footer a:hover{ text-decoration:underline }
+
+    /* Modali */
+    .modal { display:none; position: fixed; inset:0; background: rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
+    .modal .modal-content{
+      background:#fff8eb; padding:24px; border-radius:16px; width:min(520px,92%); box-shadow:0 20px 40px rgba(0,0,0,.25); text-align:center; position:relative;
+    }
+    .modal input,.modal textarea { width:92%; padding:10px; margin:6px 0; border-radius:12px; border:1px solid #ccc; background:#fff; }
+    .modal .btn{ margin-top:4px }
+    .modal .close { position:absolute; top:10px; right:14px; background:none; border:0; font-size:22px; cursor:pointer }
+
+    /* Lightbox */
+    .lb-nav a.lb-prev, .lb-nav a.lb-next { opacity: 1 !important; }
+    .lb-nav a { width: 20% !important; }
+    .lb-data .lb-number{ display:none }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="logo.jpg" alt="ArtBox MB logo" class="logo" />
+      <div class="brand">
+        <h1>ArtBox MB</h1>
+        <div class="subtitle">Unikatni pokloni od drveta</div>
+        <span class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</span>
+        <div class="header-actions">
+          <a id="fb-link" href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="btn" rel="noopener">Pogledaj na Facebooku</a>
+          <a id="ig-link" href="https://www.instagram.com/artbox_mb/" target="_blank" class="btn" rel="noopener">Pogledaj na Instagramu</a>
+          <button id="openUploadModal" class="btn" aria-label="Dodaj novu fotografiju" style="display:none">📸 Dodaj fotografiju</button>
+          <button id="toggleAdmin" class="btn admin-btn" title="Uključi Admin">🔒 Admin</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Upload (samo ADMIN) -->
+  <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-label="Dodavanje fotografije">
+    <div class="modal-content">
+      <button id="closeUploadModal" class="close" aria-label="Zatvori prozor">✖</button>
+      <h2>Dodaj novu fotografiju</h2>
+      <input type="file" id="uploadFile" accept="image/*" />
+      <textarea id="uploadDesc" placeholder="Opis slike..."></textarea>
+      <button id="uploadBtn" class="btn">📤 Pošalji</button>
+      <p id="uploadStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Admin modal (unos lozinke) -->
+  <div id="adminModal" class="modal" role="dialog" aria-modal="true" aria-label="Admin pristup">
+    <div class="modal-content">
+      <button id="closeAdminModal" class="close" aria-label="Zatvori prozor">✖</button>
+      <h2>Admin pristup</h2>
+      <input type="password" id="adminPass" placeholder="Unesi admin lozinku" autocomplete="current-password" />
+      <button id="adminLoginBtn" class="btn">🔓 Prijava</button>
+      <p id="adminStatus" style="margin:8px 0 0;font-weight:600"></p>
+    </div>
+  </div>
+
+  <!-- Delete modal (potvrda brisanja) -->
+  <div id="deleteModal" class="modal" role="dialog" aria-modal="true" aria-label="Potvrda brisanja slike">
+    <div class="modal-content">
+      <button id="closeDeleteModal" class="close" aria-label="Zatvori prozor">✖</button>
+      <h2 style="margin-bottom:6px">Obrisati sliku?</h2>
+      <p id="deleteText" style="margin:6px 0 14px;">Datoteka: <b></b></p>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+        <button id="cancelDeleteBtn" class="btn btn-ghost">Odustani</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger">🗑 Obriši</button>
+      </div>
+      <p id="deleteStatus" style="margin:10px 0 0; font-weight:600;"></p>
+    </div>
+  </div>
+
+  <main id="main-content">
+    <section id="gallery">
+      <h2>Galerija</h2>
+      <div class="toolbar">
+        <input id="search" class="search" type="search" placeholder="Pretraži opis ili naziv..." />
+      </div>
+      <div id="gallery-container" class="gallery-grid"></div>
+      <p id="galleryStatus"></p>
+    </section>
+
+    <!-- DESNA STRANA: info + forma + o nama -->
+    <aside id="contact-sidebar">
+      <div class="info-card">
+        <h3 style="margin:0 0 8px 0;">Kontakt informacije</h3>
+        <ul class="info-list">
+          <li>📍 <span>Kralja Tvrtka, Vitez, Bosna i Hercegovina &nbsp; <a href="https://maps.google.com/?q=Kralja+Tvrtka+Vitez" target="_blank" rel="noopener">Prikaži na karti</a></span></li>
+          <li>📞 <a href="tel:+38763124574">063 124 574</a></li>
+          <li>✉️ <a href="mailto:artboxmb@gmail.com">artboxmb@gmail.com</a></li>
+          <li>🕒 <span>Radimo po narudžbi • Odgovaramo brzo</span></li>
+        </ul>
+      </div>
+
+      <h2>Kontakt</h2>
+      <form id="contactForm" novalidate>
+        <label>Vaše ime i prezime:</label>
+        <input type="text" name="Ime" required />
+        <label>Vaš broj telefona:</label>
+        <input type="tel" name="Telefon" />
+        <label>Vaša email adresa:</label>
+        <input type="email" name="Email" required />
+        <label>Poruka:</label>
+        <textarea name="Poruka" rows="4" required></textarea>
+        <button type="submit" class="btn">Pošalji poruku</button>
+      </form>
+      <p id="formStatus" style="margin-top:10px; font-weight:bold;"></p>
+
+      <div class="about-card">
+        <h3 style="margin:0 0 8px 0;">O nama</h3>
+        <p style="margin:0">
+          <strong>ArtBOX</strong> – Ručno i laserski izrađeni unikatni proizvodi!<br/>
+          Kombinacija kreativnog ručnog rada i preciznosti laserskog graviranja. ✨<br/>
+          Graviram na staklu, drvetu, šperploči… Radim daske za rezanje, suvenire, magnetiće i još mnogo toga.
+          Ako ste zainteresirani za <strong>poslovnu suradnju</strong> – slobodno se javite!
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <p>📍 Kralja Tvrtka, Vitez, Bosna i Hercegovina</p>
+    <p>📞 <a href="tel:+38763124574">063 124 574</a> | ✉️ <a href="mailto:artboxmb@gmail.com">artboxmb@gmail.com</a></p>
+    <p>🌐 <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" rel="noopener">Facebook ArtBox</a></p>
+    <p>© 2025 ArtBox MB – ručni rad s dušom</p>
+  </footer>
+
+  <button id="toTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆ Na vrh</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <script>
+/* ===== Back to top ===== */
+const toTopBtn = document.getElementById("toTopBtn");
+addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "block" : "none"; });
+
+/* ===== FB/Messenger webview: otvaraj u istom tabu (bez upozorenja) ===== */
+(function () {
+  const fbBtn = document.getElementById('fb-link');
+  const igBtn = document.getElementById('ig-link');
+  const ua = navigator.userAgent || '';
+  const inFbInApp = /FBAN|FBAV|FB_IAB|Messenger/i.test(ua);
+  if (fbBtn) {
+    if (inFbInApp) { fbBtn.href = 'https://m.facebook.com/profile.php?id=100064599767535'; fbBtn.removeAttribute('target'); fbBtn.rel = 'noopener noreferrer'; }
+    else { fbBtn.href = 'https://www.facebook.com/profile.php?id=100064599767535'; fbBtn.target = '_blank'; fbBtn.rel = 'noopener'; }
   }
+  if (igBtn) {
+    if (inFbInApp) { igBtn.href = 'https://www.instagram.com/artbox_mb/'; igBtn.removeAttribute('target'); igBtn.rel = 'noopener noreferrer'; }
+    else { igBtn.href = 'https://www.instagram.com/artbox_mb/'; igBtn.target = '_blank'; igBtn.rel = 'noopener'; }
+  }
+})();
+
+/* ===== Modals ===== */
+const uploadModal = document.getElementById("uploadModal");
+const adminModal  = document.getElementById("adminModal");
+const deleteModal = document.getElementById("deleteModal");
+
+document.getElementById("openUploadModal").onclick = () => uploadModal.style.display = "flex";
+document.getElementById("closeUploadModal").onclick = () => uploadModal.style.display = "none";
+document.getElementById("closeAdminModal").onclick  = () => adminModal.style.display  = "none";
+document.getElementById("closeDeleteModal").onclick = () => closeDeleteModal();
+
+addEventListener("click", (e)=> {
+  if(e.target===uploadModal) uploadModal.style.display="none";
+  if(e.target===adminModal)  adminModal.style.display="none";
+  if(e.target===deleteModal) closeDeleteModal();
+});
+
+/* ===== Admin state ===== */
+let isAdmin = sessionStorage.getItem("ab_admin") === "1";
+function reflectAdmin(){
+  document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen (isključi)" : "🔒 Admin";
+  document.getElementById("openUploadModal").style.display = isAdmin ? "inline-block" : "none";
+  document.querySelectorAll(".card").forEach(c=> c.classList.toggle("admin", isAdmin));
+}
+reflectAdmin();
+
+document.getElementById("toggleAdmin").addEventListener("click", () => {
+  if(!isAdmin){
+    document.getElementById("adminPass").value="";
+    document.getElementById("adminStatus").textContent="";
+    adminModal.style.display="flex";
+    document.getElementById("adminPass").focus();
+  }else{
+    isAdmin=false; sessionStorage.removeItem("ab_admin");
+    reflectAdmin();
+  }
+});
+document.getElementById("adminLoginBtn").addEventListener("click", () => {
+  const pass = document.getElementById("adminPass").value.trim();
+  if(pass === "ivo11111986"){
+    isAdmin = true; sessionStorage.setItem("ab_admin","1");
+    reflectAdmin();
+    adminModal.style.display="none";
+  }else{
+    document.getElementById("adminStatus").textContent = "❌ Pogrešna lozinka.";
+  }
+});
+
+/* ===== Upload slike (ADMIN) ===== */
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+  if(!isAdmin){ alert("Prvo uključi Admin."); return; }
+  const file = document.getElementById("uploadFile").files[0];
+  const desc = document.getElementById("uploadDesc").value.trim();
+  const status = document.getElementById("uploadStatus");
+  if (!file) { status.textContent = "⚠️ Odaberi sliku."; return; }
+
+  status.textContent = "⏳ Učitavam...";
+  const base64 = await toBase64(file);
+  const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
+
+  try{
+    const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/upload", {
+      method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      status.textContent = "✅ Slika poslana!";
+      document.getElementById("uploadFile").value="";
+      document.getElementById("uploadDesc").value="";
+      await loadUploadedImages(true);
+    }else{
+      status.textContent = "⚠️ Greška pri slanju slike."; console.error(await res.text());
+    }
+  }catch(e){ status.textContent="❌ Greška pri spajanju."; console.error(e); }
+});
+function toBase64(file){ return new Promise((resolve,reject)=>{ const r=new FileReader(); r.readAsDataURL(file); r.onload=()=>resolve(r.result); r.onerror=reject; }); }
+
+/* ===== Galerija ===== */
+const GALLERY_API = "https://api.github.com/repos/artboxmb/artboxmb/contents/uploads";
+const RAW_BASE = "https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads";
+
+async function loadUploadedImages(refresh=false){
+  const wrap = document.getElementById("gallery-container");
+  const gStatus = document.getElementById("galleryStatus");
+  try{
+    if(refresh) wrap.innerHTML = "";
+    gStatus.textContent = "⏳ Učitavam galeriju...";
+    const res = await fetch(GALLERY_API, { headers: { "Accept": "application/vnd.github+json" }});
+    if(!res.ok){ gStatus.textContent=`⚠️ Greška GitHub API: ${res.status}`; return; }
+    const files = await res.json();
+    if(!Array.isArray(files)){ gStatus.textContent = "⚠️ Neočekivan odgovor s GitHuba."; return; }
+
+    const images = files.filter(f => /\.(jpg|jpeg|png|gif|jfif)$/i.test(f.name)).reverse();
+
+    const items = await Promise.all(images.map(async f => {
+      const fileNameEnc = encodeURIComponent(f.name);
+      const imgUrl  = `${RAW_BASE}/${fileNameEnc}`;
+      const descUrl = `${RAW_BASE}/${fileNameEnc}.txt`;
+      let opis = f.name;
+      try { const d = await fetch(descUrl); if(d.ok) opis = (await d.text()).trim(); } catch {}
+      return { name:f.name, src:imgUrl, alt:opis };
+    }));
+
+    wrap.innerHTML = "";
+    items.forEach((it, i) => {
+      const card = document.createElement("div");
+      card.className = "card" + (isAdmin ? " admin" : "");
+      card.style.animationDelay = (i*60) + "ms"; // stagger
+      card.classList.add("fade-in");
+      card.dataset.name = it.name;
+
+      const a = document.createElement("a");
+      a.href = it.src; a.setAttribute("data-lightbox","artbox"); a.setAttribute("data-title", it.alt);
+
+      const img = document.createElement("img");
+      img.src = it.src; img.alt = it.alt; img.loading = "lazy";
+      a.appendChild(img);
+
+      const caption = document.createElement("div");
+      caption.className = "caption"; caption.textContent = it.alt;
+
+      const del = document.createElement("button");
+      del.className = "delete-btn"; del.type="button"; del.textContent = "🗑 Obriši";
+      del.addEventListener("click", () => openDeleteModal(it.name, card));
+
+      card.appendChild(del); card.appendChild(a); card.appendChild(caption);
+      wrap.appendChild(card);
+    });
+    gStatus.textContent = "";
+  }catch(err){ console.error(err); gStatus.textContent = "❌ Greška pri učitavanju galerije."; }
 }
 
-/** -------------------- DELETE -------------------- */
-async function handleDelete(request, token, REPO, BRANCH, env, corsHeaders) {
-  try {
-    const { image_name, password } = await request.json();
+/* ===== Delete modal logic ===== */
+let pendingDelete = { name:null, card:null, busy:false };
 
-    if (!image_name) {
-      return json({ ok: false, message: "❌ Nedostaje 'image_name'." }, 400, corsHeaders);
-    }
-
-    // Sigurnost: zabrani putanje
-    if (/[\\/]/.test(image_name) || image_name.includes("..")) {
-      return json({ ok: false, message: "❌ Neispravno ime datoteke." }, 400, corsHeaders);
-    }
-
-    // Lozinka
-    const ADMIN_PASSWORD = env.ADMIN_PASSWORD || "ivo11111986";
-    if (password !== ADMIN_PASSWORD) {
-      return json({ ok: false, message: "⛔ Pogrešna lozinka." }, 401, corsHeaders);
-    }
-
-    // PATCH: koristi originalno ime (frontend već šalje “slug”), ali korisno je i ovdje osigurati
-    const safeName = image_name.trim();
-
-    // 1) Dohvati SHA slike
-    const imgPath = `uploads/${safeName}`;
-    const imgSha = await getSha(token, REPO, imgPath, BRANCH);
-    if (!imgSha) {
-      return json({ ok: false, reason: "FILE_NOT_FOUND", message: "⚠️ Slika nije pronađena." }, 404, corsHeaders);
-    }
-
-    // 2) Obriši sliku
-    const delImgRes = await fetch(ghUrl(REPO, imgPath), {
-      method: "DELETE",
-      headers: ghHeaders(token),
-      body: JSON.stringify({
-        message: `Delete image: ${safeName}`,
-        sha: imgSha,
-        branch: BRANCH,
-      }),
-    });
-    if (!delImgRes.ok) {
-      const err = await delImgRes.text();
-      return new Response(`⚠️ Brisanje slike nije uspjelo:\n${err}`, { status: delImgRes.status, headers: corsHeaders });
-    }
-
-    // 3) Pokušaj obrisati i opis (.txt) ako postoji
-    const txtPath = `uploads/${safeName}.txt`;
-    const txtSha = await getSha(token, REPO, txtPath, BRANCH);
-    if (txtSha) {
-      await fetch(ghUrl(REPO, txtPath), {
-        method: "DELETE",
-        headers: ghHeaders(token),
-        body: JSON.stringify({
-          message: `Delete desc for ${safeName}`,
-          sha: txtSha,
-          branch: BRANCH,
-        }),
-      }).catch(() => {});
-    }
-
-    return json({ ok: true, message: "✅ Datoteka obrisana." }, 200, corsHeaders);
-  } catch (err) {
-    return json({ ok: false, message: `❌ Greška u radu Workera (delete): ${err.message}` }, 500, corsHeaders);
-  }
+function openDeleteModal(fileName, cardEl){
+  if(!isAdmin){ alert("Uključi Admin mod."); return; }
+  pendingDelete = { name:fileName, card:cardEl, busy:false };
+  const nameEl = document.querySelector("#deleteText b");
+  nameEl.textContent = fileName;
+  document.getElementById("deleteStatus").textContent = "";
+  document.getElementById("confirmDeleteBtn").disabled = false;
+  document.getElementById("cancelDeleteBtn").disabled = false;
+  deleteModal.style.display = "flex";
 }
 
-/** -------------------- GitHub helpers -------------------- */
-// PATCH: v3 Accept + proper encoding
-function ghHeaders(token) {
-  return {
-    Authorization: `token ${token}`,
-    "Content-Type": "application/json",
-    "User-Agent": "ArtBoxMB-Worker",
-    Accept: "application/vnd.github.v3+json",
+function closeDeleteModal(){
+  if(pendingDelete.busy) return; // spriječi zatvaranje dok traje brisanje
+  deleteModal.style.display = "none";
+  pendingDelete = { name:null, card:null, busy:false };
+}
+
+document.getElementById("cancelDeleteBtn").addEventListener("click", closeDeleteModal);
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+  if(!pendingDelete.name || !pendingDelete.card || pendingDelete.busy) return;
+  pendingDelete.busy = true;
+  const status = document.getElementById("deleteStatus");
+  const confirmBtn = document.getElementById("confirmDeleteBtn");
+  const cancelBtn = document.getElementById("cancelDeleteBtn");
+  confirmBtn.disabled = true; cancelBtn.disabled = true;
+  status.textContent = "⏳ Brišem...";
+
+  try{
+    const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ image_name: pendingDelete.name, password: "ivo11111986" })
+    });
+    if(res.ok){
+      status.textContent = "✅ Obrisano.";
+      // kratka animacija uklanjanja
+      pendingDelete.card.style.opacity="0";
+      pendingDelete.card.style.transform="scale(.98)";
+      setTimeout(()=>{
+        pendingDelete.card.remove();
+        closeDeleteModal();
+      }, 220);
+    }else{
+      const txt = await res.text().catch(()=> "");
+      status.textContent = "⚠️ Brisanje nije uspjelo. " + txt;
+      confirmBtn.disabled = false; cancelBtn.disabled = false;
+      pendingDelete.busy = false;
+    }
+  }catch(e){
+    status.textContent = "❌ Greška pri spajanju na server.";
+    console.error(e);
+    confirmBtn.disabled = false; cancelBtn.disabled = false;
+    pendingDelete.busy = false;
+  }
+});
+
+/* Pretraga u galeriji */
+document.getElementById("search").addEventListener("input", e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll("#gallery-container .card").forEach(c=>{
+    const text = (c.querySelector(".caption")?.textContent || "").toLowerCase();
+    c.style.display = text.includes(q) ? "" : "none";
+  });
+});
+
+addEventListener("DOMContentLoaded", loadUploadedImages);
+
+/* ===== Lightbox ===== */
+lightbox.option({
+  resizeDuration: 200, wrapAround: true, showImageNumberLabel: false,
+  alwaysShowNavOnTouchDevices: true, disableScrolling: false, positionFromTop: 50
+});
+
+/* ===== EmailJS ===== */
+(function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
+document.getElementById("contactForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const status = document.getElementById("formStatus");
+  status.textContent = "⏳ Šaljem poruku...";
+
+  const data = {
+    ime: this.Ime.value,
+    telefon: this.Telefon.value,
+    email: this.Email.value,
+    poruka: this.Poruka.value
   };
-}
 
-// PATCH: enkodiraj SVAKI segment putanje (radi razmaka i naših slova)
-function ghUrl(repo, path) {
-  const safePath = path.split("/").map(seg => encodeURIComponent(seg)).join("/");
-  return `https://api.github.com/repos/${repo}/contents/${safePath}`;
-}
-
-async function getSha(token, repo, path, branch) {
-  const res = await fetch(`${ghUrl(repo, path)}?ref=${encodeURIComponent(branch)}`, {
-    headers: ghHeaders(token),
-  });
-  if (res.status === 404) return null;
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(`GitHub GET failed: ${res.status} ${txt}`);
-  }
-  const json = await res.json();
-  return json?.sha || null;
-}
-
-/** -------------------- Utility -------------------- */
-// PATCH: JSON helper s CORS headerima
-function json(data, status, corsHeaders) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" },
-  });
-}
-
-// PATCH: sigurno ime fajla (isti algoritam kao na frontendu)
-function safeFileName(name) {
-  name = String(name || "").trim();
-  const dot = name.lastIndexOf(".");
-  const rawBase = dot === -1 ? name : name.slice(0, dot);
-  const rawExt  = dot === -1 ? ""   : name.slice(dot + 1);
-
-  const base = rawBase
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // strip dijakritike
-    .replace(/đ/g, "d").replace(/Đ/g, "d")
-    .replace(/[^a-zA-Z0-9]+/g, "-")
-    .replace(/-+/g, "-").replace(/^-|-$/g, "")
-    .toLowerCase();
-
-  const ext = (rawExt || "jpg").toLowerCase();
-  const safeExt = /^(jpg|jpeg|png|gif|jfif)$/.test(ext) ? ext : "jpg";
-
-  return `${base || "slika"}.${safeExt}`;
-}
+  emailjs.send("service_z1edus4", "template_oir8m86", data)
+    .then(() => {
+      status.textContent = "✅ Poruka poslana. Hvala!";
+      this.reset();
+      return emailjs.send("service_z1edus4", "template_0u49rjp", { to_email: data.email, ime: data.ime });
+    })
+    .catch(err => {
+      status.textContent = "❌ Greška pri slanju: " + (err?.text || "pokušajte kasnije");
+      console.error(err);
+    });
+});
+  </script>
+</body>
+</html>
