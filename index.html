@@ -13,7 +13,6 @@
 
   <link rel="icon" type="image/png" href="grb.jpg" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="style.css" />
   <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet" />
 
   <style>
@@ -23,7 +22,7 @@
     }
     *{box-sizing:border-box}
     body { font-family: "Poppins", sans-serif; background-color: var(--cream); color: var(--text); margin: 0; }
-    a{ color: inherit; }
+    a{ color: inherit; text-decoration:none }
 
     /* Header */
     header {
@@ -36,28 +35,37 @@
       max-width: 1200px; margin: 0 auto; padding: 14px 18px;
       display:flex; align-items:center; gap:14px; justify-content:center;
     }
-    .logo{ width:72px; height:72px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
-    .brand{
-      text-align:center;
-    }
-    .brand h1 { font-size: 2.2em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
+    .logo{ width:110px; height:110px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
+    .brand{ text-align:center; }
+    .brand h1 { font-size: 2.4em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
     .subtitle { font-size: 1.05em; margin: 2px 0 6px; opacity:.9 }
-    .highlight { background-color: var(--accent); display: inline-block; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+    .highlight { background-color: var(--accent); display: inline-block; padding: 6px 12px; border-radius: 10px; font-weight: 600; }
     .header-actions{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
-    .btn { display:inline-block; background-color: var(--brown); color:#fff; padding:10px 16px; border-radius:10px; text-decoration:none; font-weight:700; border:0; cursor:pointer; }
+    .btn { display:inline-block; background-color: var(--brown); color:#fff; padding:10px 16px; border-radius:12px; font-weight:700; border:0; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.08)}
     .btn:hover { background-color: var(--brown-2); }
 
     /* Layout */
     #main-content { max-width:1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 320px; gap: 20px; padding: 0 18px; }
-    @media (max-width: 900px) { #main-content { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) {
+      #main-content { grid-template-columns: 1fr; }
+      header{ position: static; }                 /* ⇦ header nije sticky na mobitelu */
+      .logo{ width:90px; height:90px }
+    }
 
     /* Gallery */
     #gallery h2{ margin: 0 0 10px 2px; }
     .toolbar{ display:flex; gap:8px; align-items:center; margin: 8px 0 14px; flex-wrap:wrap; }
-    .search{ flex:1; min-width: 240px; border:1px solid #ddd; border-radius:10px; padding:10px 12px; background:#fff; }
+    .search{ flex:1; min-width: 240px; border:1px solid #ddd; border-radius:12px; padding:10px 12px; background:#fff; }
     .admin-btn{ background:#8c6a46 }
     .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-    .card { position:relative; background: #fff; border-radius:14px; box-shadow: 0 10px 22px rgba(0,0,0,.06); overflow:hidden; transition:.25s transform, .25s box-shadow; }
+    .card {
+      position:relative; background: #fff; border-radius:16px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.06); overflow:hidden;
+      transition:.25s transform, .25s box-shadow, .25s opacity;
+      opacity:0; transform: translateY(8px);           /* start for fade-in */
+    }
+    .card.fade-in { animation: fadeInUp .5s ease forwards; }
+    @keyframes fadeInUp { to{ opacity:1; transform: translateY(0);} }
     .card:hover{ transform: translateY(-2px); box-shadow: 0 16px 28px rgba(0,0,0,.10);}
     .card a{ display:block }
     .card img { width: 100%; aspect-ratio: 1/1; height: auto; object-fit: cover; display:block; }
@@ -70,35 +78,33 @@
     .card.admin .delete-btn{ display:block; }
 
     /* Contact box */
-    #contact-sidebar { position: sticky; top: 90px; background-color: var(--card); padding: 18px; border-radius: 14px; box-shadow: 0 8px 22px rgba(0,0,0,.08); height: fit-content; }
+    #contact-sidebar { position: sticky; top: 90px; background-color: var(--card); padding: 18px; border-radius: 16px; box-shadow: 0 8px 22px rgba(0,0,0,.08); height: fit-content; }
     #contact-sidebar h2{ margin-top:0 }
-    #contact-sidebar input, #contact-sidebar textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; background:#fff; margin:6px 0 10px; }
+    #contact-sidebar input, #contact-sidebar textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:12px; background:#fff; margin:6px 0 10px; }
     #contact-sidebar button{ width:100%; }
 
     /* Back to top */
-    #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: var(--brown); color: white; border: none; padding: 12px 18px; border-radius: 10px; cursor: pointer; display: none; font-weight: bold; z-index: 60; }
+    #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: var(--brown); color: white; border: none; padding: 12px 18px; border-radius: 12px; cursor: pointer; display: none; font-weight: bold; z-index: 60; }
     #toTopBtn:hover { background-color: var(--brown-2); }
 
     /* Footer */
     footer { text-align: center; padding: 26px 18px; background-color: var(--footer); color: var(--text); margin-top: 30px; font-size: 0.98em; }
-    footer a{ color:#2a1405; font-weight:700; text-decoration:none; background:#fff1d7; padding:2px 8px; border-radius:8px }
+    footer a{ color:#2a1405; font-weight:700; background:#fff1d7; padding:2px 8px; border-radius:8px }
     footer a:hover{ text-decoration:underline }
 
-    /* Upload modal */
-    #uploadModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
-    #uploadModal .modal-content {
-      background-color: #fff8eb; padding: 25px; border-radius: 14px; max-width: 520px; width: 92%;
-      box-shadow: 0 20px 40px rgba(0,0,0,.25); text-align: center; position: relative;
+    /* Modali (upload + admin) zajednički */
+    .modal { display:none; position: fixed; inset:0; background: rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
+    .modal .modal-content{
+      background:#fff8eb; padding:24px; border-radius:16px; width:min(520px,92%); box-shadow:0 20px 40px rgba(0,0,0,.25); text-align:center; position:relative;
     }
-    #uploadModal input, #uploadModal textarea { width: 92%; padding: 10px; margin: 6px 0; border-radius: 10px; border: 1px solid #ccc; background:#fff; }
-    #uploadModal button { background-color: var(--brown); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-    #uploadModal button:hover { background-color: var(--brown-2); }
-    #closeUploadModal { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 22px; cursor: pointer; }
+    .modal input,.modal textarea { width:92%; padding:10px; margin:6px 0; border-radius:12px; border:1px solid #ccc; background:#fff; }
+    .modal .btn{ margin-top:4px }
+    .modal .close { position:absolute; top:10px; right:14px; background:none; border:0; font-size:22px; cursor:pointer }
 
     /* Lightbox arrows visibility on touch */
     .lb-nav a.lb-prev, .lb-nav a.lb-next { opacity: 1 !important; }
     .lb-nav a { width: 20% !important; } /* veća dodirna površina */
-    .lb-data .lb-number{ display:none } /* bez "image 1 of x" */
+    .lb-data .lb-number{ display:none }
   </style>
 </head>
 
@@ -112,22 +118,33 @@
         <span class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</span>
         <div class="header-actions">
           <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="btn" rel="noopener">Pogledaj na Facebooku</a>
-          <button id="openUploadModal" class="btn" aria-label="Dodaj novu fotografiju">📸 Dodaj fotografiju</button>
+          <button id="openUploadModal" class="btn" aria-label="Dodaj novu fotografiju" style="display:none">📸 Dodaj fotografiju</button>
+          <button id="toggleAdmin" class="btn admin-btn" title="Uključi Admin">🔒 Admin</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Upload modal -->
-  <div id="uploadModal" role="dialog" aria-modal="true" aria-label="Dodavanje fotografije">
+  <!-- Upload modal (samo za ADMIN) -->
+  <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-label="Dodavanje fotografije">
     <div class="modal-content">
-      <button id="closeUploadModal" aria-label="Zatvori prozor">✖</button>
+      <button id="closeUploadModal" class="close" aria-label="Zatvori prozor">✖</button>
       <h2>Dodaj novu fotografiju</h2>
-      <input type="password" id="uploadPass" placeholder="Unesi pristupnu lozinku" autocomplete="current-password" />
       <input type="file" id="uploadFile" accept="image/*" />
       <textarea id="uploadDesc" placeholder="Opis slike..."></textarea>
-      <button id="uploadBtn">📤 Pošalji</button>
+      <button id="uploadBtn" class="btn">📤 Pošalji</button>
       <p id="uploadStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Admin modal (unos lozinke) -->
+  <div id="adminModal" class="modal" role="dialog" aria-modal="true" aria-label="Admin pristup">
+    <div class="modal-content">
+      <button id="closeAdminModal" class="close" aria-label="Zatvori prozor">✖</button>
+      <h2>Admin pristup</h2>
+      <input type="password" id="adminPass" placeholder="Unesi admin lozinku" autocomplete="current-password" />
+      <button id="adminLoginBtn" class="btn">🔓 Prijava</button>
+      <p id="adminStatus" style="margin:8px 0 0;font-weight:600"></p>
     </div>
   </div>
 
@@ -136,7 +153,6 @@
       <h2>Galerija</h2>
       <div class="toolbar">
         <input id="search" class="search" type="search" placeholder="Pretraži opis ili naziv..." />
-        <button id="toggleAdmin" class="btn admin-btn" title="Uključi Admin (brisanje slika)">🔒 Admin</button>
       </div>
       <div id="gallery-container" class="gallery-grid"></div>
       <p id="galleryStatus"></p>
@@ -168,80 +184,83 @@
   </footer>
 
   <button id="toTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆ Na vrh</button>
-<script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-<script>
+  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <script>
 /* ===== Back to top ===== */
 const toTopBtn = document.getElementById("toTopBtn");
-window.addEventListener("scroll", () => {
-  toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "block" : "none"; });
+
+/* ===== Modals ===== */
+const uploadModal = document.getElementById("uploadModal");
+const adminModal  = document.getElementById("adminModal");
+document.getElementById("openUploadModal").onclick = () => uploadModal.style.display = "flex";
+document.getElementById("closeUploadModal").onclick = () => uploadModal.style.display = "none";
+document.getElementById("closeAdminModal").onclick  = () => adminModal.style.display  = "none";
+addEventListener("click", (e)=> {
+  if(e.target===uploadModal) uploadModal.style.display="none";
+  if(e.target===adminModal)  adminModal.style.display="none";
 });
 
-/* ===== Modal upload ===== */
-const modal = document.getElementById("uploadModal");
-document.getElementById("openUploadModal").onclick = () => (modal.style.display = "flex");
-document.getElementById("closeUploadModal").onclick = () => (modal.style.display = "none");
-window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
-
-/* ===== Admin mode (delete) ===== */
+/* ===== Admin state ===== */
 let isAdmin = sessionStorage.getItem("ab_admin") === "1";
 function reflectAdmin(){
-  document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen" : "🔒 Admin";
+  // gumb stanje + kartice + upload gumb
+  document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen (isključi)" : "🔒 Admin";
+  document.getElementById("openUploadModal").style.display = isAdmin ? "inline-block" : "none";
   document.querySelectorAll(".card").forEach(c=> c.classList.toggle("admin", isAdmin));
 }
 reflectAdmin();
+
 document.getElementById("toggleAdmin").addEventListener("click", () => {
-  if(!isAdmin){
-    const pass = prompt("Unesi admin lozinku:");
-    if(pass === "ivo11111986"){ isAdmin = true; sessionStorage.setItem("ab_admin","1"); }
-  }else{
-    isAdmin = false; sessionStorage.removeItem("ab_admin");
+  if(!isAdmin){            // otvori modal za lozinku
+    document.getElementById("adminPass").value="";
+    document.getElementById("adminStatus").textContent="";
+    adminModal.style.display="flex";
+    document.getElementById("adminPass").focus();
+  }else{                   // isključi admin
+    isAdmin=false; sessionStorage.removeItem("ab_admin");
+    reflectAdmin();
   }
-  reflectAdmin();
+});
+document.getElementById("adminLoginBtn").addEventListener("click", () => {
+  const pass = document.getElementById("adminPass").value.trim();
+  if(pass === "ivo11111986"){
+    isAdmin = true; sessionStorage.setItem("ab_admin","1");
+    reflectAdmin();
+    adminModal.style.display="none";
+  }else{
+    document.getElementById("adminStatus").textContent = "❌ Pogrešna lozinka.";
+  }
 });
 
-/* ===== Upload slike ===== */
+/* ===== Upload slike (ADMIN) ===== */
 document.getElementById("uploadBtn").addEventListener("click", async () => {
-  const pass = document.getElementById("uploadPass").value.trim();
+  if(!isAdmin){ alert("Prvo uključi Admin."); return; }
   const file = document.getElementById("uploadFile").files[0];
   const desc = document.getElementById("uploadDesc").value.trim();
   const status = document.getElementById("uploadStatus");
-
-  if (pass !== "ivo11111986") { status.textContent = "❌ Pogrešna lozinka!"; return; }
   if (!file) { status.textContent = "⚠️ Odaberi sliku."; return; }
 
   status.textContent = "⏳ Učitavam...";
   const base64 = await toBase64(file);
   const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
 
-  try {
+  try{
     const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload)
     });
-    if (res.ok) {
-      status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
+    if(res.ok){
+      status.textContent = "✅ Slika poslana!"; document.getElementById("uploadFile").value=""; document.getElementById("uploadDesc").value="";
       await loadUploadedImages(true);
-    } else {
-      status.textContent = "⚠️ Greška pri slanju slike.";
-      console.error(await res.text());
+    }else{
+      status.textContent = "⚠️ Greška pri slanju slike."; console.error(await res.text());
     }
-  } catch (e) {
-    status.textContent = "❌ Greška pri spajanju na server.";
-    console.error(e);
-  }
+  }catch(e){ status.textContent="❌ Greška pri spajanju."; console.error(e); }
 });
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-  });
-}
+function toBase64(file){ return new Promise((resolve,reject)=>{ const r=new FileReader(); r.readAsDataURL(file); r.onload=()=>resolve(r.result); r.onerror=reject; }); }
 
 /* ===== Galerija ===== */
 const GALLERY_API = "https://api.github.com/repos/artboxmb/artboxmb/contents/uploads";
@@ -253,12 +272,8 @@ async function loadUploadedImages(refresh=false){
   try{
     if(refresh) wrap.innerHTML = "";
     gStatus.textContent = "⏳ Učitavam galeriju...";
-
     const res = await fetch(GALLERY_API, { headers: { "Accept": "application/vnd.github+json" }});
-    if(!res.ok){
-      gStatus.textContent = `⚠️ Greška GitHub API: ${res.status}`;
-      return;
-    }
+    if(!res.ok){ gStatus.textContent=`⚠️ Greška GitHub API: ${res.status}`; return; }
     const files = await res.json();
     if(!Array.isArray(files)){ gStatus.textContent = "⚠️ Neočekivan odgovor s GitHuba."; return; }
 
@@ -274,38 +289,32 @@ async function loadUploadedImages(refresh=false){
     }));
 
     wrap.innerHTML = "";
-    for(const it of items){
+    items.forEach((it, i) => {
       const card = document.createElement("div");
       card.className = "card" + (isAdmin ? " admin" : "");
+      card.style.animationDelay = (i*60) + "ms"; // stagger
+      card.classList.add("fade-in");
       card.dataset.name = it.name;
 
       const a = document.createElement("a");
-      a.href = it.src;
-      a.setAttribute("data-lightbox","artbox");
-      a.setAttribute("data-title", it.alt);
+      a.href = it.src; a.setAttribute("data-lightbox","artbox"); a.setAttribute("data-title", it.alt);
 
       const img = document.createElement("img");
       img.src = it.src; img.alt = it.alt; img.loading = "lazy";
       a.appendChild(img);
 
       const caption = document.createElement("div");
-      caption.className = "caption";
-      caption.textContent = it.alt;
+      caption.className = "caption"; caption.textContent = it.alt;
 
       const del = document.createElement("button");
       del.className = "delete-btn"; del.type="button"; del.textContent = "🗑 Obriši";
       del.addEventListener("click", () => deleteImage(it.name, card));
 
-      card.appendChild(del);
-      card.appendChild(a);
-      card.appendChild(caption);
+      card.appendChild(del); card.appendChild(a); card.appendChild(caption);
       wrap.appendChild(card);
-    }
+    });
     gStatus.textContent = "";
-  }catch(err){
-    console.error(err);
-    gStatus.textContent = "❌ Greška pri učitavanju galerije.";
-  }
+  }catch(err){ console.error(err); gStatus.textContent = "❌ Greška pri učitavanju galerije."; }
 }
 
 async function deleteImage(fileName, cardEl){
@@ -313,20 +322,15 @@ async function deleteImage(fileName, cardEl){
   if(!confirm(`Obrisati sliku: ${fileName}?`)) return;
   try{
     const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
-      method: "POST",
-      headers:{ "Content-Type":"application/json" },
+      method:"POST", headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({ image_name: fileName, password: "ivo11111986" })
     });
     if(res.ok){
-      cardEl.remove();
-    }else{
-      alert("Brisanje nije uspjelo (server).");
-      console.error(await res.text());
-    }
-  }catch(e){
-    alert("Greška pri spajanju na server.");
-    console.error(e);
-  }
+      // mala animacija nestanka
+      cardEl.style.opacity="0"; cardEl.style.transform="scale(.98)";
+      setTimeout(()=>cardEl.remove(), 200);
+    }else{ alert("Brisanje nije uspjelo (server)."); console.error(await res.text()); }
+  }catch(e){ alert("Greška pri spajanju na server."); console.error(e); }
 }
 
 /* Pretraga u galeriji */
@@ -334,26 +338,21 @@ document.getElementById("search").addEventListener("input", e=>{
   const q = e.target.value.toLowerCase();
   document.querySelectorAll("#gallery-container .card").forEach(c=>{
     const text = (c.querySelector(".caption")?.textContent || "").toLowerCase();
-    c.style.display = text.includes(q) ? "" : "none";
+    const show = text.includes(q);
+    c.style.display = show ? "" : "none";
   });
 });
 
-/* Učitavanje nakon DOM-a */
-window.addEventListener("DOMContentLoaded", loadUploadedImages);
+addEventListener("DOMContentLoaded", loadUploadedImages);
 
-/* ===== Lightbox postavke ===== */
+/* ===== Lightbox ===== */
 lightbox.option({
-  resizeDuration: 200,
-  wrapAround: true,
-  showImageNumberLabel: false,
-  alwaysShowNavOnTouchDevices: true,
-  disableScrolling: false,
-  positionFromTop: 50
+  resizeDuration: 200, wrapAround: true, showImageNumberLabel: false,
+  alwaysShowNavOnTouchDevices: true, disableScrolling: false, positionFromTop: 50
 });
 
 /* ===== EmailJS ===== */
 (function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
-
 document.getElementById("contactForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const status = document.getElementById("formStatus");
@@ -366,15 +365,12 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
     poruka: this.Poruka.value
   };
 
-  // 1) Poruka TEBI
   emailjs.send("service_z1edus4", "template_oir8m86", data)
     .then(() => {
       status.textContent = "✅ Poruka poslana. Hvala!";
       this.reset();
-      // 2) Auto-reply KUPCU
       return emailjs.send("service_z1edus4", "template_0u49rjp", {
-        to_email: data.email, // u templatu stavi {{to_email}}
-        ime: data.ime
+        to_email: data.email, ime: data.ime
       });
     })
     .catch(err => {
@@ -382,9 +378,6 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
       console.error(err);
     });
 });
-</script>
-
+  </script>
 </body>
 </html>
-
-
