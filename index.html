@@ -7,16 +7,14 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'AW-17634789497'); // Globalni tag
+    gtag('config', 'AW-17634789497');
+    gtag('event', 'conversion', {
+      'send_to': 'AW-17634789497/R0kACMGkqakbEPm9QthB',
+      'value': 1.0,
+      'currency': 'USD'
+    });
   </script>
-  <!-- Event snippet for Page view conversion page -->
-<script>
-  gtag('event', 'conversion', {
-    'send_to': 'AW-17634789497/R0kACMGkqakbEPm9QthB',
-    'value': 1.0,
-    'currency': 'USD'
-  });
-</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ArtBox MB – unikatni pokloni od drveta</title>
@@ -73,7 +71,6 @@
     #gallery h2{ margin: 0 0 10px 2px; }
     .toolbar{ display:flex; gap:8px; align-items:center; margin: 8px 0 14px; flex-wrap:wrap; }
     .search{ flex:1; min-width: 240px; border:1px solid #ddd; border-radius:12px; padding:10px 12px; background:#fff; }
-    .admin-btn{ background:#8c6a46 }
     .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
     .card {
       position:relative; background: #fff; border-radius:16px;
@@ -245,7 +242,7 @@ addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "blo
   const inFbInApp = /FBAN|FBAV|FB_IAB|Messenger/i.test(ua);
 
   if (fbBtn) {
-    if (inFbInApp) { // isti tab i mobilna FB web-stranica
+    if (inFbInApp) {
       fbBtn.href = 'https://m.facebook.com/profile.php?id=100064599767535';
       fbBtn.removeAttribute('target');
       fbBtn.rel = 'noopener noreferrer';
@@ -256,7 +253,7 @@ addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "blo
     }
   }
   if (igBtn) {
-    if (inFbInApp) { // bez otvaranja appa
+    if (inFbInApp) {
       igBtn.href = 'https://www.instagram.com/artbox_mb/';
       igBtn.removeAttribute('target');
       igBtn.rel = 'noopener noreferrer';
@@ -310,6 +307,32 @@ document.getElementById("adminLoginBtn").addEventListener("click", () => {
   }
 });
 
+/* ===== Pomoćne: toBase64 + SLUGIFY ===== */
+function toBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader(); r.readAsDataURL(file);
+    r.onload=()=>resolve(r.result); r.onerror=reject;
+  });
+}
+// Pretvori "Daska za posluživanje (č,ć,ž).JPG" -> "daska-za-posluzivanje.jpg"
+function slugifyName(name) {
+  const dot = name.lastIndexOf('.');
+  const rawBase = dot === -1 ? name : name.slice(0, dot);
+  const rawExt  = dot === -1 ? ''   : name.slice(dot + 1);
+
+  const base = rawBase
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/-+/g, '-').replace(/^-|-$/g, '')
+    .toLowerCase();
+
+  const ext = (rawExt || 'jpg').toLowerCase();
+  const safeExt = /^(jpg|jpeg|png|gif|jfif)$/.test(ext) ? ext : 'jpg';
+
+  return `${base || 'slika'}.${safeExt}`;
+}
+
 /* ===== Upload slike (ADMIN) ===== */
 document.getElementById("uploadBtn").addEventListener("click", async () => {
   if(!isAdmin){ alert("Prvo uključi Admin."); return; }
@@ -320,14 +343,15 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
 
   status.textContent = "⏳ Učitavam...";
   const base64 = await toBase64(file);
-  const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
+  const safeName = slugifyName(file.name);
+  const payload = { image_name: safeName, image_desc: desc || "", image_base64: base64.split(",")[1] };
 
   try{
     const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/upload", {
       method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload)
     });
     if(res.ok){
-      status.textContent = "✅ Slika poslana!";
+      status.textContent = "✅ Slika poslana kao: " + safeName;
       document.getElementById("uploadFile").value="";
       document.getElementById("uploadDesc").value="";
       await loadUploadedImages(true);
@@ -336,7 +360,6 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
     }
   }catch(e){ status.textContent="❌ Greška pri spajanju."; console.error(e); }
 });
-function toBase64(file){ return new Promise((resolve,reject)=>{ const r=new FileReader(); r.readAsDataURL(file); r.onload=()=>resolve(r.result); r.onerror=reject; }); }
 
 /* ===== Galerija ===== */
 const GALLERY_API = "https://api.github.com/repos/artboxmb/artboxmb/contents/uploads";
@@ -368,7 +391,7 @@ async function loadUploadedImages(refresh=false){
     items.forEach((it, i) => {
       const card = document.createElement("div");
       card.className = "card" + (isAdmin ? " admin" : "");
-      card.style.animationDelay = (i*60) + "ms"; // stagger
+      card.style.animationDelay = (i*60) + "ms";
       card.classList.add("fade-in");
       card.dataset.name = it.name;
 
@@ -391,6 +414,40 @@ async function loadUploadedImages(refresh=false){
     });
     gStatus.textContent = "";
   }catch(err){ console.error(err); gStatus.textContent = "❌ Greška pri učitavanju galerije."; }
+}
+
+/* ===== BRISANJE (ADMIN) ===== */
+async function deleteImage(fileName, cardEl){
+  if(!isAdmin){ alert("Uključi Admin mod."); return; }
+  if(!confirm(`Obrisati sliku: ${fileName}?`)) return;
+  try{
+    const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ image_name: fileName.trim(), password: "ivo11111986" })
+    });
+
+    if(res.ok){
+      cardEl.animate([{opacity:1},{opacity:0, transform:'scale(.98)'}],{duration:200,fill:'forwards'});
+      setTimeout(()=>cardEl.remove(), 220);
+      return;
+    }
+
+    let msg = `Brisanje nije uspjelo (HTTP ${res.status}).`;
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      const data = await res.json();
+      if (data?.reason === "FILE_NOT_FOUND") msg = "⚠️ Datoteka nije pronađena na GitHubu.";
+      else if (data?.message) msg += "\n" + data.message;
+    } else {
+      msg += "\n" + (await res.text()).slice(0,300);
+    }
+    alert(msg);
+
+  }catch(e){
+    alert("Greška pri spajanju na server.");
+    console.error(e);
+  }
 }
 
 /* Pretraga u galeriji */
@@ -438,6 +495,3 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
-
-
-
