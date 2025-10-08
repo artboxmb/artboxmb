@@ -25,20 +25,19 @@
     a{ color: inherit; text-decoration:none }
 
     /* Header */
-  header {
-  position: static;             /* ⇦ više nije zalijepljen */
-  z-index: 1;
-  backdrop-filter: blur(6px);
-  background: linear-gradient(180deg, rgba(247,241,230,.92), rgba(247,241,230,.85)) url("https://www.transparenttextures.com/patterns/wood-pattern.png");
-  border-bottom: 1px solid #e9dfcc;
-  box-shadow: 0 2px 8px rgba(0,0,0,.04); /* blagi shadow da izgleda uredno dok skrola */
-     }
-
+    header {
+      position: static;
+      z-index: 1;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(247,241,230,.92), rgba(247,241,230,.85)) url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+      border-bottom: 1px solid #e9dfcc;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
     .header-inner{
       max-width: 1200px; margin: 0 auto; padding: 14px 18px;
       display:flex; align-items:center; gap:14px; justify-content:center;
     }
-    .logo{ width:110px; height:110px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
+    .logo{ width:140px; height:140px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
     .brand{ text-align:center; }
     .brand h1 { font-size: 2.4em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
     .subtitle { font-size: 1.05em; margin: 2px 0 6px; opacity:.9 }
@@ -51,7 +50,7 @@
     #main-content { max-width:1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 320px; gap: 20px; padding: 0 18px; }
     @media (max-width: 900px) {
       #main-content { grid-template-columns: 1fr; }
-      header{ position: static; }                 /* ⇦ header nije sticky na mobitelu */
+      header{ position: static; }
       .logo{ width:90px; height:90px }
     }
 
@@ -65,7 +64,7 @@
       position:relative; background: #fff; border-radius:16px;
       box-shadow: 0 10px 22px rgba(0,0,0,.06); overflow:hidden;
       transition:.25s transform, .25s box-shadow, .25s opacity;
-      opacity:0; transform: translateY(8px);           /* start for fade-in */
+      opacity:0; transform: translateY(8px);
     }
     .card.fade-in { animation: fadeInUp .5s ease forwards; }
     @keyframes fadeInUp { to{ opacity:1; transform: translateY(0);} }
@@ -104,10 +103,30 @@
     .modal .btn{ margin-top:4px }
     .modal .close { position:absolute; top:10px; right:14px; background:none; border:0; font-size:22px; cursor:pointer }
 
-    /* Lightbox arrows visibility on touch */
+    /* Lightbox */
     .lb-nav a.lb-prev, .lb-nav a.lb-next { opacity: 1 !important; }
-    .lb-nav a { width: 20% !important; } /* veća dodirna površina */
+    .lb-nav a { width: 20% !important; }
     .lb-data .lb-number{ display:none }
+
+    /* === DESNI ROTATOR (desktop only) === */
+    #right-rotator{
+      display:none; position:fixed; right:18px; top:140px; width:280px; height:380px;
+      background:#fff; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,.16);
+      overflow:hidden; z-index:20;
+    }
+    #right-rotator.show{ display:block; }
+    #right-rotator a{ display:block; width:100%; height:100%; position:relative }
+    #right-rotator img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .6s ease; }
+    #right-rotator img.active{ opacity:1; }
+    #right-rotator .badge{
+      position:absolute; left:10px; top:10px; background:var(--brown); color:#fff;
+      padding:6px 10px; border-radius:10px; font-weight:700; font-size:.9em;
+      box-shadow:0 6px 16px rgba(0,0,0,.18);
+    }
+    /* prikaži rotator samo na širokim ekranima */
+    @media (min-width: 1400px){
+      #right-rotator{ display:block; }
+    }
   </style>
 </head>
 
@@ -127,6 +146,14 @@
       </div>
     </div>
   </header>
+
+  <!-- floating rotator (desna strana / desktop) -->
+  <div id="right-rotator" aria-label="Istaknute fotografije">
+    <a id="rotLink" data-lightbox="artbox" data-title="">
+      <img id="rotImg" alt="Istaknuta fotografija">
+      <span class="badge">Iz galerije</span>
+    </a>
+  </div>
 
   <!-- Upload modal (samo za ADMIN) -->
   <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-label="Dodavanje fotografije">
@@ -210,7 +237,6 @@ addEventListener("click", (e)=> {
 /* ===== Admin state ===== */
 let isAdmin = sessionStorage.getItem("ab_admin") === "1";
 function reflectAdmin(){
-  // gumb stanje + kartice + upload gumb
   document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen (isključi)" : "🔒 Admin";
   document.getElementById("openUploadModal").style.display = isAdmin ? "inline-block" : "none";
   document.querySelectorAll(".card").forEach(c=> c.classList.toggle("admin", isAdmin));
@@ -218,12 +244,12 @@ function reflectAdmin(){
 reflectAdmin();
 
 document.getElementById("toggleAdmin").addEventListener("click", () => {
-  if(!isAdmin){            // otvori modal za lozinku
+  if(!isAdmin){
     document.getElementById("adminPass").value="";
     document.getElementById("adminStatus").textContent="";
     adminModal.style.display="flex";
     document.getElementById("adminPass").focus();
-  }else{                   // isključi admin
+  }else{
     isAdmin=false; sessionStorage.removeItem("ab_admin");
     reflectAdmin();
   }
@@ -256,7 +282,9 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
       method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload)
     });
     if(res.ok){
-      status.textContent = "✅ Slika poslana!"; document.getElementById("uploadFile").value=""; document.getElementById("uploadDesc").value="";
+      status.textContent = "✅ Slika poslana!";
+      document.getElementById("uploadFile").value="";
+      document.getElementById("uploadDesc").value="";
       await loadUploadedImages(true);
     }else{
       status.textContent = "⚠️ Greška pri slanju slike."; console.error(await res.text());
@@ -317,7 +345,39 @@ async function loadUploadedImages(refresh=false){
       wrap.appendChild(card);
     });
     gStatus.textContent = "";
+
+    // pokreni desni rotator
+    initRightRotator(items);
+
   }catch(err){ console.error(err); gStatus.textContent = "❌ Greška pri učitavanju galerije."; }
+}
+
+/* ===== Desni rotator ===== */
+let _rotTimer = null;
+function initRightRotator(items){
+  const box  = document.getElementById("right-rotator");
+  const link = document.getElementById("rotLink");
+  const img  = document.getElementById("rotImg");
+  if(!box || !items || !items.length) return;
+
+  let i = 0;
+  function show(idx){
+    const it = items[idx % items.length];
+    link.href = it.src;
+    link.setAttribute("data-title", it.alt);
+    img.classList.remove("active");
+    img.onload = () => img.classList.add("active");
+    img.src = it.src; img.alt = it.alt;
+  }
+
+  clearInterval(_rotTimer);
+  show(0);
+  box.classList.add("show");
+  _rotTimer = setInterval(()=>{ i=(i+1)%items.length; show(i); }, 5000);
+
+  // pauza na hover
+  box.addEventListener("mouseenter", ()=>{ clearInterval(_rotTimer); });
+  box.addEventListener("mouseleave", ()=>{ clearInterval(_rotTimer); _rotTimer=setInterval(()=>{ i=(i+1)%items.length; show(i); }, 5000); });
 }
 
 async function deleteImage(fileName, cardEl){
@@ -329,7 +389,6 @@ async function deleteImage(fileName, cardEl){
       body: JSON.stringify({ image_name: fileName, password: "ivo11111986" })
     });
     if(res.ok){
-      // mala animacija nestanka
       cardEl.style.opacity="0"; cardEl.style.transform="scale(.98)";
       setTimeout(()=>cardEl.remove(), 200);
     }else{ alert("Brisanje nije uspjelo (server)."); console.error(await res.text()); }
@@ -341,8 +400,7 @@ document.getElementById("search").addEventListener("input", e=>{
   const q = e.target.value.toLowerCase();
   document.querySelectorAll("#gallery-container .card").forEach(c=>{
     const text = (c.querySelector(".caption")?.textContent || "").toLowerCase();
-    const show = text.includes(q);
-    c.style.display = show ? "" : "none";
+    c.style.display = text.includes(q) ? "" : "none";
   });
 });
 
@@ -372,9 +430,7 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
     .then(() => {
       status.textContent = "✅ Poruka poslana. Hvala!";
       this.reset();
-      return emailjs.send("service_z1edus4", "template_0u49rjp", {
-        to_email: data.email, ime: data.ime
-      });
+      return emailjs.send("service_z1edus4", "template_0u49rjp", { to_email: data.email, ime: data.ime });
     })
     .catch(err => {
       status.textContent = "❌ Greška pri slanju: " + (err?.text || "pokušajte kasnije");
@@ -384,4 +440,3 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
-
