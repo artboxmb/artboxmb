@@ -168,216 +168,223 @@
   </footer>
 
   <button id="toTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆ Na vrh</button>
+<script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+/* ===== Back to top ===== */
+const toTopBtn = document.getElementById("toTopBtn");
+window.addEventListener("scroll", () => {
+  toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+});
 
-  <script>
-  // ===== Back to top
-  const toTopBtn = document.getElementById("toTopBtn");
-  window.addEventListener("scroll", () => {
-    toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
-  });
+/* ===== Modal upload ===== */
+const modal = document.getElementById("uploadModal");
+document.getElementById("openUploadModal").onclick = () => (modal.style.display = "flex");
+document.getElementById("closeUploadModal").onclick = () => (modal.style.display = "none");
+window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
-  // ===== Modal upload
-  const modal = document.getElementById("uploadModal");
-  document.getElementById("openUploadModal").onclick = () => modal.style.display = "flex";
-  document.getElementById("closeUploadModal").onclick = () => modal.style.display = "none";
-  window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
-
-  // ===== Admin mode (for delete)
-  let isAdmin = sessionStorage.getItem("ab_admin") === "1";
-  function reflectAdmin(){
-    document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen" : "🔒 Admin";
-    // dodaj/ukloni admin klasu karticama
-    document.querySelectorAll(".card").forEach(c=> c.classList.toggle("admin", isAdmin));
+/* ===== Admin mode (delete) ===== */
+let isAdmin = sessionStorage.getItem("ab_admin") === "1";
+function reflectAdmin(){
+  document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen" : "🔒 Admin";
+  document.querySelectorAll(".card").forEach(c=> c.classList.toggle("admin", isAdmin));
+}
+reflectAdmin();
+document.getElementById("toggleAdmin").addEventListener("click", () => {
+  if(!isAdmin){
+    const pass = prompt("Unesi admin lozinku:");
+    if(pass === "ivo11111986"){ isAdmin = true; sessionStorage.setItem("ab_admin","1"); }
+  }else{
+    isAdmin = false; sessionStorage.removeItem("ab_admin");
   }
   reflectAdmin();
-  document.getElementById("toggleAdmin").addEventListener("click", async () => {
-    if(!isAdmin){
-      const pass = prompt("Unesi admin lozinku:");
-      if(pass === "ivo11111986"){ isAdmin = true; sessionStorage.setItem("ab_admin","1"); }
-    }else{ isAdmin = false; sessionStorage.removeItem("ab_admin"); }
-    reflectAdmin();
-  });
+});
 
-  // ===== Upload slike
-  document.getElementById("uploadBtn").addEventListener("click", async () => {
-    const pass = document.getElementById("uploadPass").value.trim();
-    const file = document.getElementById("uploadFile").files[0];
-    const desc = document.getElementById("uploadDesc").value.trim();
-    const status = document.getElementById("uploadStatus");
+/* ===== Upload slike ===== */
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+  const pass = document.getElementById("uploadPass").value.trim();
+  const file = document.getElementById("uploadFile").files[0];
+  const desc = document.getElementById("uploadDesc").value.trim();
+  const status = document.getElementById("uploadStatus");
 
-    if (pass !== "ivo11111986") { status.textContent = "❌ Pogrešna lozinka!"; return; }
-    if (!file) { status.textContent = "⚠️ Odaberi sliku."; return; }
+  if (pass !== "ivo11111986") { status.textContent = "❌ Pogrešna lozinka!"; return; }
+  if (!file) { status.textContent = "⚠️ Odaberi sliku."; return; }
 
-    status.textContent = "⏳ Učitavam...";
-    const base64 = await toBase64(file);
-    const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
+  status.textContent = "⏳ Učitavam...";
+  const base64 = await toBase64(file);
+  const payload = { image_name: file.name, image_desc: desc || "", image_base64: base64.split(",")[1] };
 
-    try {
-      const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
-        await loadUploadedImages(true);
-      } else status.textContent = "⚠️ Greška pri slanju slike.";
-    } catch {
-      status.textContent = "❌ Greška pri spajanju na server.";
-    }
-  });
-
-  function toBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
+  try {
+    const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
+    if (res.ok) {
+      status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
+      await loadUploadedImages(true);
+    } else {
+      status.textContent = "⚠️ Greška pri slanju slike.";
+      console.error(await res.text());
+    }
+  } catch (e) {
+    status.textContent = "❌ Greška pri spajanju na server.";
+    console.error(e);
   }
+});
 
-  // ===== Galerija
-  const GALLERY_API = "https://api.github.com/repos/artboxmb/artboxmb/contents/uploads";
-  const RAW_BASE = "https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads";
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
+}
 
-  async function loadUploadedImages(refresh=false){
-    const wrap = document.getElementById("gallery-container");
-    const gStatus = document.getElementById("galleryStatus");
-    try{
-      if(refresh) wrap.innerHTML = "";
-      gStatus.textContent = "⏳ Učitavam galeriju...";
-      const res = await fetch(GALLERY_API); const files = await res.json();
-      const images = files.filter(f => /\.(jpg|jpeg|png|gif|jfif)$/i.test(f.name)).reverse();
+/* ===== Galerija ===== */
+const GALLERY_API = "https://api.github.com/repos/artboxmb/artboxmb/contents/uploads";
+const RAW_BASE = "https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads";
 
-      const items = await Promise.all(images.map(async f => {
-        const imgUrl  = `${RAW_BASE}/${f.name}`;
-        const descUrl = `${RAW_BASE}/${f.name}.txt`;
-        let opis = f.name;
-        try { const d = await fetch(descUrl); if(d.ok) opis = (await d.text()).trim(); } catch {}
-        return { name:f.name, src:imgUrl, alt:opis };
-      }));
+async function loadUploadedImages(refresh=false){
+  const wrap = document.getElementById("gallery-container");
+  const gStatus = document.getElementById("galleryStatus");
+  try{
+    if(refresh) wrap.innerHTML = "";
+    gStatus.textContent = "⏳ Učitavam galeriju...";
 
-      wrap.innerHTML = "";
-      for(const it of items){
-        const card = document.createElement("div");
-        card.className = "card" + (isAdmin ? " admin" : "");
-        card.dataset.name = it.name;
+    const res = await fetch(GALLERY_API, { headers: { "Accept": "application/vnd.github+json" }});
+    if(!res.ok){
+      gStatus.textContent = `⚠️ Greška GitHub API: ${res.status}`;
+      return;
+    }
+    const files = await res.json();
+    if(!Array.isArray(files)){ gStatus.textContent = "⚠️ Neočekivan odgovor s GitHuba."; return; }
 
-        const a = document.createElement("a");
-        a.href = it.src; a.setAttribute("data-lightbox","artbox"); a.setAttribute("data-title", it.alt);
+    const images = files.filter(f => /\.(jpg|jpeg|png|gif|jfif)$/i.test(f.name)).reverse();
 
-        const img = document.createElement("img");
-        img.src = it.src; img.alt = it.alt; img.loading = "lazy";
-        a.appendChild(img);
+    const items = await Promise.all(images.map(async f => {
+      const fileNameEnc = encodeURIComponent(f.name);
+      const imgUrl  = `${RAW_BASE}/${fileNameEnc}`;
+      const descUrl = `${RAW_BASE}/${fileNameEnc}.txt`;
+      let opis = f.name;
+      try { const d = await fetch(descUrl); if(d.ok) opis = (await d.text()).trim(); } catch {}
+      return { name:f.name, src:imgUrl, alt:opis };
+    }));
 
-        const caption = document.createElement("div");
-        caption.className = "caption";
-        caption.textContent = it.alt;
+    wrap.innerHTML = "";
+    for(const it of items){
+      const card = document.createElement("div");
+      card.className = "card" + (isAdmin ? " admin" : "");
+      card.dataset.name = it.name;
 
-        const del = document.createElement("button");
-        del.className = "delete-btn"; del.type="button"; del.textContent = "🗑 Obriši";
-        del.addEventListener("click", () => deleteImage(it.name, card));
+      const a = document.createElement("a");
+      a.href = it.src;
+      a.setAttribute("data-lightbox","artbox");
+      a.setAttribute("data-title", it.alt);
 
-        card.appendChild(del);
-        card.appendChild(a);
-        card.appendChild(caption);
-        wrap.appendChild(card);
-      }
-      gStatus.textContent = "";
-    }catch(err){
+      const img = document.createElement("img");
+      img.src = it.src; img.alt = it.alt; img.loading = "lazy";
+      a.appendChild(img);
+
+      const caption = document.createElement("div");
+      caption.className = "caption";
+      caption.textContent = it.alt;
+
+      const del = document.createElement("button");
+      del.className = "delete-btn"; del.type="button"; del.textContent = "🗑 Obriši";
+      del.addEventListener("click", () => deleteImage(it.name, card));
+
+      card.appendChild(del);
+      card.appendChild(a);
+      card.appendChild(caption);
+      wrap.appendChild(card);
+    }
+    gStatus.textContent = "";
+  }catch(err){
+    console.error(err);
+    gStatus.textContent = "❌ Greška pri učitavanju galerije.";
+  }
+}
+
+async function deleteImage(fileName, cardEl){
+  if(!isAdmin){ alert("Uključi Admin mod."); return; }
+  if(!confirm(`Obrisati sliku: ${fileName}?`)) return;
+  try{
+    const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
+      method: "POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ image_name: fileName, password: "ivo11111986" })
+    });
+    if(res.ok){
+      cardEl.remove();
+    }else{
+      alert("Brisanje nije uspjelo (server).");
+      console.error(await res.text());
+    }
+  }catch(e){
+    alert("Greška pri spajanju na server.");
+    console.error(e);
+  }
+}
+
+/* Pretraga u galeriji */
+document.getElementById("search").addEventListener("input", e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll("#gallery-container .card").forEach(c=>{
+    const text = (c.querySelector(".caption")?.textContent || "").toLowerCase();
+    c.style.display = text.includes(q) ? "" : "none";
+  });
+});
+
+/* Učitavanje nakon DOM-a */
+window.addEventListener("DOMContentLoaded", loadUploadedImages);
+
+/* ===== Lightbox postavke ===== */
+lightbox.option({
+  resizeDuration: 200,
+  wrapAround: true,
+  showImageNumberLabel: false,
+  alwaysShowNavOnTouchDevices: true,
+  disableScrolling: false,
+  positionFromTop: 50
+});
+
+/* ===== EmailJS ===== */
+(function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
+
+document.getElementById("contactForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const status = document.getElementById("formStatus");
+  status.textContent = "⏳ Šaljem poruku...";
+
+  const data = {
+    ime: this.Ime.value,
+    telefon: this.Telefon.value,
+    email: this.Email.value,
+    poruka: this.Poruka.value
+  };
+
+  // 1) Poruka TEBI
+  emailjs.send("service_z1edus4", "template_oir8m86", data)
+    .then(() => {
+      status.textContent = "✅ Poruka poslana. Hvala!";
+      this.reset();
+      // 2) Auto-reply KUPCU
+      return emailjs.send("service_z1edus4", "template_0u49rjp", {
+        to_email: data.email, // u templatu stavi {{to_email}}
+        ime: data.ime
+      });
+    })
+    .catch(err => {
+      status.textContent = "❌ Greška pri slanju: " + (err?.text || "pokušajte kasnije");
       console.error(err);
-      gStatus.textContent = "❌ Greška pri učitavanju galerije.";
-    }
-  }
-
-  async function deleteImage(fileName, cardEl){
-    if(!isAdmin){ alert("Uključi Admin mod."); return; }
-    if(!confirm(`Obrisati sliku: ${fileName}?`)) return;
-    try{
-      // ⚠️ Na Cloudflare Worker-u implementiraj POST /delete
-      //   očekuje JSON: { image_name, password }
-      const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
-        method: "POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ image_name: fileName, password: "ivo11111986" })
-      });
-      if(res.ok){
-        cardEl.remove();
-      }else{
-        alert("Brisanje nije uspjelo (server).");
-      }
-    }catch{
-      alert("Greška pri spajanju na server.");
-    }
-  }
-
-  // Pretraga
-  document.getElementById("search").addEventListener("input", e=>{
-    const q = e.target.value.toLowerCase();
-    document.querySelectorAll("#gallery-container .card").forEach(c=>{
-      const text = (c.querySelector(".caption")?.textContent || "").toLowerCase();
-      c.style.display = text.includes(q) ? "" : "none";
     });
-  });
+});
+</script>
 
-  window.addEventListener("DOMContentLoaded", loadUploadedImages);
-
-  // ===== Lightbox postavke (strelice na mobitelu)
-  lightbox.option({
-    resizeDuration: 200, wrapAround: true, showImageNumberLabel: false,
-    alwaysShowNavOnTouchDevices: true, disableScrolling: false, positionFromTop: 50
-  });
-
-  // ===== EmailJS
-  (function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
-
-  document.getElementById("contactForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const status = document.getElementById("formStatus");
-    status.textContent = "⏳ Šaljem poruku...";
-
-    const data = {
-      ime: this.Ime.value,
-      telefon: this.Telefon.value,
-      email: this.Email.value,
-      poruka: this.Poruka.value
-    };
-
-    // 1) Poruka tebi (postojeći template može ostati isti)
-    (function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
-
-  document.getElementById("contactForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const status = document.getElementById("formStatus");
-    status.textContent = "⏳ Šaljem poruku...";
-
-    const data = {
-      ime: this.Ime.value,
-      telefon: this.Telefon.value,
-      email: this.Email.value,
-      poruka: this.Poruka.value
-    };
-
-    // 1) Poruka TEBI (template_oir8m86)
-    emailjs.send("service_z1edus4", "template_oir8m86", data)
-      .then(() => {
-        status.textContent = "✅ Poruka poslana. Hvala!";
-        this.reset();
-
-        // 2) Auto-reply KUPCU (template_0u49rjp)
-        return emailjs.send("service_z1edus4", "template_0u49rjp", {
-          to_email: data.email,  // ⚠ u templatu To Email mora biti {{to_email}}
-          ime: data.ime
-        });
-      })
-      .catch(err => {
-        status.textContent = "❌ Greška pri slanju: " + (err?.text || "pokušajte kasnije");
-        console.error(err);
-      });
-  });
-
-  </script>
 </body>
 </html>
+
 
