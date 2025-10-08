@@ -4,143 +4,212 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ArtBox MB – unikatni pokloni od drveta</title>
+  <meta name="description" content="ArtBox MB – unikatni laser-cut pokloni od drveta: slike, satovi, privjesci, magneti, daske, boce i još mnogo toga. Ručni rad s dušom." />
+  <meta property="og:title" content="ArtBox MB – unikatni pokloni od drveta" />
+  <meta property="og:description" content="Ručni rad s dušom. Pogledaj galeriju i naruči preko obrasca." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="logo.jpg" />
+  <meta property="og:url" content="https://artboxmb.github.io/artboxmb/" />
 
   <link rel="icon" type="image/png" href="grb.jpg" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="style.css" />
   <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet" />
 
   <style>
-    body { font-family: "Poppins", sans-serif; background-color: #f7f1e6; color: #4b3f2f; margin: 0; padding: 0; }
-    header { text-align: center; background: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); padding: 40px 20px; }
-    .header-content h1 { font-size: 2.5em; margin: 0; font-family: "Brush Script MT", cursive; color: #3a2b1a; }
-    .subtitle { font-size: 1.2em; margin-bottom: 5px; }
-    .highlight { background-color: #d4b483; display: inline-block; padding: 6px 12px; border-radius: 5px; font-weight: bold; }
-    .fb-button { display: inline-block; margin-top: 10px; background-color: #4b3f2f; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; }
-    .fb-button:hover { background-color: #6a563f; }
-
-    #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: #4b3f2f; color: white; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; display: none; font-weight: bold; z-index: 99; }
-    #toTopBtn:hover { background-color: #6a563f; }
-
-    #main-content { display: flex; flex-wrap: wrap; align-items: flex-start; padding: 20px; gap: 20px; }
-    #gallery { flex: 3; min-width: 300px; }
-    .gallery-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; justify-items: center; }
-    .gallery-container img { width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; }
-    .gallery-container img:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(0,0,0,0.25); }
-
-    #contact-sidebar { flex: 1; min-width: 280px; position: sticky; top: 20px; background-color: #fffaf3; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); height: fit-content; }
-    footer { text-align: center; padding: 20px; background-color: #e8dcc5; color: #3a2b1a; margin-top: 40px; font-size: 0.95em; }
-
-    #uploadModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-    #uploadModal .modal-content {
-      background-color: #fff8eb;
-      padding: 25px;
-      border-radius: 12px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      text-align: center;
-      position: relative;
+    :root{
+      --brown:#4b3f2f; --brown-2:#6a563f; --cream:#f7f1e6; --card:#fffaf3; --footer:#e8dcc5;
+      --accent:#d4b483; --text:#3a2b1a;
     }
-    #uploadModal input, #uploadModal textarea { width: 90%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ccc; }
-    #uploadModal button { background-color: #4b3f2f; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    #uploadModal button:hover { background-color: #6a563f; }
+    *{box-sizing:border-box}
+    body { font-family: "Poppins", sans-serif; background-color: var(--cream); color: var(--text); margin: 0; }
+    a{ color: inherit; }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(247,241,230,.92), rgba(247,241,230,.85)) url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+      border-bottom: 1px solid #e9dfcc;
+    }
+    .header-inner{
+      max-width: 1200px; margin: 0 auto; padding: 14px 18px;
+      display:flex; align-items:center; gap:14px; justify-content:center;
+    }
+    .logo{ width:72px; height:72px; object-fit:cover; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.12) }
+    .brand{
+      text-align:center;
+    }
+    .brand h1 { font-size: 2.2em; line-height:1.05; margin: 0; font-family: "Brush Script MT", cursive; color: var(--text); }
+    .subtitle { font-size: 1.05em; margin: 2px 0 6px; opacity:.9 }
+    .highlight { background-color: var(--accent); display: inline-block; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+    .header-actions{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+    .btn { display:inline-block; background-color: var(--brown); color:#fff; padding:10px 16px; border-radius:10px; text-decoration:none; font-weight:700; border:0; cursor:pointer; }
+    .btn:hover { background-color: var(--brown-2); }
+
+    /* Layout */
+    #main-content { max-width:1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 320px; gap: 20px; padding: 0 18px; }
+    @media (max-width: 900px) { #main-content { grid-template-columns: 1fr; } }
+
+    /* Gallery */
+    #gallery h2{ margin: 0 0 10px 2px; }
+    .toolbar{ display:flex; gap:8px; align-items:center; margin: 8px 0 14px; flex-wrap:wrap; }
+    .search{ flex:1; min-width: 240px; border:1px solid #ddd; border-radius:10px; padding:10px 12px; background:#fff; }
+    .admin-btn{ background:#8c6a46 }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+    .card { position:relative; background: #fff; border-radius:14px; box-shadow: 0 10px 22px rgba(0,0,0,.06); overflow:hidden; transition:.25s transform, .25s box-shadow; }
+    .card:hover{ transform: translateY(-2px); box-shadow: 0 16px 28px rgba(0,0,0,.10);}
+    .card a{ display:block }
+    .card img { width: 100%; aspect-ratio: 1/1; height: auto; object-fit: cover; display:block; }
+    .card .caption{ padding: 8px 12px 12px; font-size:.95em }
+    .delete-btn{
+      position:absolute; top:8px; right:8px; border:0; padding:8px 10px; border-radius:10px;
+      background:#c62828; color:#fff; font-weight:700; cursor:pointer; display:none;
+      box-shadow: 0 6px 16px rgba(198,40,40,.35);
+    }
+    .card.admin .delete-btn{ display:block; }
+
+    /* Contact box */
+    #contact-sidebar { position: sticky; top: 90px; background-color: var(--card); padding: 18px; border-radius: 14px; box-shadow: 0 8px 22px rgba(0,0,0,.08); height: fit-content; }
+    #contact-sidebar h2{ margin-top:0 }
+    #contact-sidebar input, #contact-sidebar textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; background:#fff; margin:6px 0 10px; }
+    #contact-sidebar button{ width:100%; }
+
+    /* Back to top */
+    #toTopBtn { position: fixed; bottom: 20px; right: 20px; background-color: var(--brown); color: white; border: none; padding: 12px 18px; border-radius: 10px; cursor: pointer; display: none; font-weight: bold; z-index: 60; }
+    #toTopBtn:hover { background-color: var(--brown-2); }
+
+    /* Footer */
+    footer { text-align: center; padding: 26px 18px; background-color: var(--footer); color: var(--text); margin-top: 30px; font-size: 0.98em; }
+    footer a{ color:#2a1405; font-weight:700; text-decoration:none; background:#fff1d7; padding:2px 8px; border-radius:8px }
+    footer a:hover{ text-decoration:underline }
+
+    /* Upload modal */
+    #uploadModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
+    #uploadModal .modal-content {
+      background-color: #fff8eb; padding: 25px; border-radius: 14px; max-width: 520px; width: 92%;
+      box-shadow: 0 20px 40px rgba(0,0,0,.25); text-align: center; position: relative;
+    }
+    #uploadModal input, #uploadModal textarea { width: 92%; padding: 10px; margin: 6px 0; border-radius: 10px; border: 1px solid #ccc; background:#fff; }
+    #uploadModal button { background-color: var(--brown); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+    #uploadModal button:hover { background-color: var(--brown-2); }
     #closeUploadModal { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 22px; cursor: pointer; }
 
-    @media (max-width: 900px) { #main-content { flex-direction: column; } #contact-sidebar { position: static; width: 90%; margin: 0 auto; } }
+    /* Lightbox arrows visibility on touch */
+    .lb-nav a.lb-prev, .lb-nav a.lb-next { opacity: 1 !important; }
+    .lb-nav a { width: 20% !important; } /* veća dodirna površina */
+    .lb-data .lb-number{ display:none } /* bez "image 1 of x" */
   </style>
 </head>
 
 <body>
   <header>
-    <div class="header-content">
-      <h1>ArtBox MB</h1>
-      <p class="subtitle">Unikatni pokloni od drveta</p>
-      <p class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</p>
-      <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="fb-button">Pogledaj na Facebooku</a>
+    <div class="header-inner">
+      <img src="logo.jpg" alt="ArtBox MB logo" class="logo" />
+      <div class="brand">
+        <h1>ArtBox MB</h1>
+        <div class="subtitle">Unikatni pokloni od drveta</div>
+        <span class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</span>
+        <div class="header-actions">
+          <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" class="btn" rel="noopener">Pogledaj na Facebooku</a>
+          <button id="openUploadModal" class="btn" aria-label="Dodaj novu fotografiju">📸 Dodaj fotografiju</button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <div style="text-align:center; margin-top:20px;">
-    <button id="openUploadModal" style="background-color:#4b3f2f;color:#fff;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:bold;">
-      📸 Dodaj novu fotografiju
-    </button>
-  </div>
-
-  <div id="uploadModal">
+  <!-- Upload modal -->
+  <div id="uploadModal" role="dialog" aria-modal="true" aria-label="Dodavanje fotografije">
     <div class="modal-content">
-      <button id="closeUploadModal">✖</button>
+      <button id="closeUploadModal" aria-label="Zatvori prozor">✖</button>
       <h2>Dodaj novu fotografiju</h2>
-      <input type="password" id="uploadPass" placeholder="Unesi pristupnu lozinku" /><br>
-      <input type="file" id="uploadFile" accept="image/*" /><br>
-      <textarea id="uploadDesc" placeholder="Opis slike..."></textarea><br>
+      <input type="password" id="uploadPass" placeholder="Unesi pristupnu lozinku" autocomplete="current-password" />
+      <input type="file" id="uploadFile" accept="image/*" />
+      <textarea id="uploadDesc" placeholder="Opis slike..."></textarea>
       <button id="uploadBtn">📤 Pošalji</button>
-      <p id="uploadStatus"></p>
+      <p id="uploadStatus" role="status" aria-live="polite"></p>
     </div>
   </div>
 
-  <section id="main-content">
+  <main id="main-content">
     <section id="gallery">
       <h2>Galerija</h2>
-      <div id="gallery-container" class="gallery-container"></div>
+      <div class="toolbar">
+        <input id="search" class="search" type="search" placeholder="Pretraži opis ili naziv..." />
+        <button id="toggleAdmin" class="btn admin-btn" title="Uključi Admin (brisanje slika)">🔒 Admin</button>
+      </div>
+      <div id="gallery-container" class="gallery-grid"></div>
+      <p id="galleryStatus"></p>
     </section>
 
-    <!-- 🔹 KONTAKT OBRAZAC -->
+    <!-- Kontakt -->
     <aside id="contact-sidebar">
       <h2>Kontakt</h2>
-      <form id="contactForm">
+      <form id="contactForm" novalidate>
         <label>Ime i prezime:</label>
         <input type="text" name="Ime" required />
-
         <label>Broj telefona:</label>
         <input type="tel" name="Telefon" />
-
         <label>Email adresa:</label>
         <input type="email" name="Email" required />
-
         <label>Poruka:</label>
         <textarea name="Poruka" rows="4" required></textarea>
-
-        <button type="submit">Pošalji poruku</button>
+        <button type="submit" class="btn">Pošalji poruku</button>
       </form>
       <p id="formStatus" style="margin-top:10px; font-weight:bold;"></p>
     </aside>
-  </section>
+  </main>
 
   <footer>
     <p>📍 Kralja Tvrtka, Vitez, Bosna i Hercegovina</p>
-    <p>📞 063 124 574 | ✉️ <a href="mailto:artboxmb@gmail.com">artboxmb@gmail.com</a></p>
-    <p>🌐 <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank">Facebook ArtBox</a></p>
+    <p>📞 <a href="tel:+38763124574">063 124 574</a> | ✉️ <a href="mailto:artboxmb@gmail.com">artboxmb@gmail.com</a></p>
+    <p>🌐 <a href="https://www.facebook.com/profile.php?id=100064599767535" target="_blank" rel="noopener">Facebook ArtBox</a></p>
     <p>© 2025 ArtBox MB – ručni rad s dušom</p>
   </footer>
 
-  <button id="toTopBtn" onclick="scrollToTop()">⬆ Na vrh</button>
+  <button id="toTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆ Na vrh</button>
 
   <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-<script>
-  // --- Gumb na vrh
+  <script>
+  // ===== Back to top
   const toTopBtn = document.getElementById("toTopBtn");
-  window.onscroll = () => toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
-  function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
+  window.addEventListener("scroll", () => {
+    toTopBtn.style.display = window.scrollY > 300 ? "block" : "none";
+  });
 
-  // --- Modal upload
-  const openModal = document.getElementById("openUploadModal");
-  const closeModal = document.getElementById("closeUploadModal");
+  // ===== Modal upload
   const modal = document.getElementById("uploadModal");
-  openModal.addEventListener("click", () => modal.style.display = "flex");
-  closeModal.addEventListener("click", () => modal.style.display = "none");
+  document.getElementById("openUploadModal").onclick = () => modal.style.display = "flex";
+  document.getElementById("closeUploadModal").onclick = () => modal.style.display = "none";
   window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
-  // --- Upload slike
+  // ===== Admin mode (for delete)
+  let isAdmin = sessionStorage.getItem("ab_admin") === "1";
+  function reflectAdmin(){
+    document.getElementById("toggleAdmin").textContent = isAdmin ? "✅ Admin uključen" : "🔒 Admin";
+    // dodaj/ukloni admin klasu karticama
+    document.querySelectorAll(".card").forEach(c=> c.classList.toggle("admin", isAdmin));
+  }
+  reflectAdmin();
+  document.getElementById("toggleAdmin").addEventListener("click", async () => {
+    if(!isAdmin){
+      const pass = prompt("Unesi admin lozinku:");
+      if(pass === "ivo11111986"){ isAdmin = true; sessionStorage.setItem("ab_admin","1"); }
+    }else{ isAdmin = false; sessionStorage.removeItem("ab_admin"); }
+    reflectAdmin();
+  });
+
+  // ===== Upload slike
   document.getElementById("uploadBtn").addEventListener("click", async () => {
     const pass = document.getElementById("uploadPass").value.trim();
     const file = document.getElementById("uploadFile").files[0];
     const desc = document.getElementById("uploadDesc").value.trim();
     const status = document.getElementById("uploadStatus");
 
-    if (pass !== "ivo11111986") return status.textContent = "❌ Pogrešna lozinka!";
-    if (!file) return status.textContent = "⚠️ Odaberi sliku.";
+    if (pass !== "ivo11111986") { status.textContent = "❌ Pogrešna lozinka!"; return; }
+    if (!file) { status.textContent = "⚠️ Odaberi sliku."; return; }
 
     status.textContent = "⏳ Učitavam...";
     const base64 = await toBase64(file);
@@ -148,9 +217,7 @@
 
     try {
       const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
       });
       if (res.ok) {
         status.textContent = "✅ Slika poslana! Bit će vidljiva uskoro.";
@@ -170,49 +237,99 @@
     });
   }
 
-  // --- Učitavanje galerije
-  async function loadUploadedImages(refresh = false) {
-    try {
-      const gallery = document.getElementById("gallery-container");
-      if (refresh) gallery.innerHTML = "";
+  // ===== Galerija
+  const GALLERY_API = "https://api.github.com/repos/artboxmb/artboxmb/contents/uploads";
+  const RAW_BASE = "https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads";
 
-      const res = await fetch("https://api.github.com/repos/artboxmb/artboxmb/contents/uploads");
-      const files = await res.json();
-      const images = files.filter(f => f.name.match(/\.(jpg|jpeg|png|gif|jfif)$/i)).reverse();
+  async function loadUploadedImages(refresh=false){
+    const wrap = document.getElementById("gallery-container");
+    const gStatus = document.getElementById("galleryStatus");
+    try{
+      if(refresh) wrap.innerHTML = "";
+      gStatus.textContent = "⏳ Učitavam galeriju...";
+      const res = await fetch(GALLERY_API); const files = await res.json();
+      const images = files.filter(f => /\.(jpg|jpeg|png|gif|jfif)$/i.test(f.name)).reverse();
 
-      for (const img of images) {
-        const imgUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}`;
-        const descUrl = `https://raw.githubusercontent.com/artboxmb/artboxmb/main/uploads/${img.name}.txt`;
+      const items = await Promise.all(images.map(async f => {
+        const imgUrl  = `${RAW_BASE}/${f.name}`;
+        const descUrl = `${RAW_BASE}/${f.name}.txt`;
+        let opis = f.name;
+        try { const d = await fetch(descUrl); if(d.ok) opis = (await d.text()).trim(); } catch {}
+        return { name:f.name, src:imgUrl, alt:opis };
+      }));
 
-        let opis = img.name;
-        try {
-          const descRes = await fetch(descUrl);
-          if (descRes.ok) opis = await descRes.text();
-        } catch {}
+      wrap.innerHTML = "";
+      for(const it of items){
+        const card = document.createElement("div");
+        card.className = "card" + (isAdmin ? " admin" : "");
+        card.dataset.name = it.name;
 
         const a = document.createElement("a");
-        a.href = imgUrl;
-        a.setAttribute("data-lightbox", "artbox");
-        a.setAttribute("data-title", opis.trim());
+        a.href = it.src; a.setAttribute("data-lightbox","artbox"); a.setAttribute("data-title", it.alt);
 
-        const imageEl = document.createElement("img");
-        imageEl.src = imgUrl;
-        imageEl.alt = opis.trim();
+        const img = document.createElement("img");
+        img.src = it.src; img.alt = it.alt; img.loading = "lazy";
+        a.appendChild(img);
 
-        a.appendChild(imageEl);
-        gallery.appendChild(a);
+        const caption = document.createElement("div");
+        caption.className = "caption";
+        caption.textContent = it.alt;
+
+        const del = document.createElement("button");
+        del.className = "delete-btn"; del.type="button"; del.textContent = "🗑 Obriši";
+        del.addEventListener("click", () => deleteImage(it.name, card));
+
+        card.appendChild(del);
+        card.appendChild(a);
+        card.appendChild(caption);
+        wrap.appendChild(card);
       }
-    } catch (err) {
-      console.error("❌ Greška pri učitavanju slika:", err);
+      gStatus.textContent = "";
+    }catch(err){
+      console.error(err);
+      gStatus.textContent = "❌ Greška pri učitavanju galerije.";
     }
   }
 
+  async function deleteImage(fileName, cardEl){
+    if(!isAdmin){ alert("Uključi Admin mod."); return; }
+    if(!confirm(`Obrisati sliku: ${fileName}?`)) return;
+    try{
+      // ⚠️ Na Cloudflare Worker-u implementiraj POST /delete
+      //   očekuje JSON: { image_name, password }
+      const res = await fetch("https://nameless-resonance-66de.artboxmb.workers.dev/delete", {
+        method: "POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ image_name: fileName, password: "ivo11111986" })
+      });
+      if(res.ok){
+        cardEl.remove();
+      }else{
+        alert("Brisanje nije uspjelo (server).");
+      }
+    }catch{
+      alert("Greška pri spajanju na server.");
+    }
+  }
+
+  // Pretraga
+  document.getElementById("search").addEventListener("input", e=>{
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll("#gallery-container .card").forEach(c=>{
+      const text = (c.querySelector(".caption")?.textContent || "").toLowerCase();
+      c.style.display = text.includes(q) ? "" : "none";
+    });
+  });
+
   window.addEventListener("DOMContentLoaded", loadUploadedImages);
 
-  // --- Lightbox postavke
-  lightbox.option({ resizeDuration: 200, wrapAround: true, showImageNumberLabel: false });
+  // ===== Lightbox postavke (strelice na mobitelu)
+  lightbox.option({
+    resizeDuration: 200, wrapAround: true, showImageNumberLabel: false,
+    alwaysShowNavOnTouchDevices: true, disableScrolling: false, positionFromTop: 50
+  });
 
-  // --- EmailJS integracija
+  // ===== EmailJS
   (function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
 
   document.getElementById("contactForm").addEventListener("submit", function(e) {
@@ -227,22 +344,27 @@
       poruka: this.Poruka.value
     };
 
+    // 1) Poruka tebi (postojeći template može ostati isti)
     emailjs.send("service_z1edus4", "template_oir8m86", data)
       .then(() => {
         status.textContent = "✅ Poruka uspješno poslana! Hvala na javljanju.";
         this.reset();
-        // Auto reply
-        emailjs.send("service_z1edus4", "template_oir8m86", {
-          ime: data.ime,
-          email: data.email,
-          poruka: "Hvala na poruci! Vaša poruka je primljena, javit ćemo se uskoro. 🌿"
+
+        // 2) Auto-reply kupcu – koristi POSEBAN template koji šalje na {{to_email}}
+        // U EmailJS kreiraj npr. template_autoreply:
+        //   To: {{to_email}}
+        //   Subject: Hvala na poruci – ArtBox MB
+        //   Body: "Hvala, {{ime}}! Vaša poruka je zaprimljena. Javit ćemo se u što kraćem roku."
+        emailjs.send("service_z1edus4", "template_autoreply", {
+          to_email: data.email,
+          ime: data.ime
         });
       })
       .catch(err => {
-        status.textContent = "❌ Greška pri slanju: " + err.text;
+        status.textContent = "❌ Greška pri slanju: " + (err?.text || "pokušajte kasnije");
         console.error(err);
       });
   });
-</script>
+  </script>
 </body>
 </html>
