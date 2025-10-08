@@ -345,18 +345,29 @@
     };
 
     // 1) Poruka tebi (postojeći template može ostati isti)
+    (function(){ emailjs.init("esz6-yE_k9uHLQtoY"); })();
+
+  document.getElementById("contactForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const status = document.getElementById("formStatus");
+    status.textContent = "⏳ Šaljem poruku...";
+
+    const data = {
+      ime: this.Ime.value,
+      telefon: this.Telefon.value,
+      email: this.Email.value,
+      poruka: this.Poruka.value
+    };
+
+    // 1) Poruka TEBI (template_oir8m86)
     emailjs.send("service_z1edus4", "template_oir8m86", data)
       .then(() => {
-        status.textContent = "✅ Poruka uspješno poslana! Hvala na javljanju.";
+        status.textContent = "✅ Poruka poslana. Hvala!";
         this.reset();
 
-        // 2) Auto-reply kupcu – koristi POSEBAN template koji šalje na {{to_email}}
-        // U EmailJS kreiraj npr. template_autoreply:
-        //   To: {{to_email}}
-        //   Subject: Hvala na poruci – ArtBox MB
-        //   Body: "Hvala, {{ime}}! Vaša poruka je zaprimljena. Javit ćemo se u što kraćem roku."
-        emailjs.send("service_z1edus4", "template_autoreply", {
-          to_email: data.email,
+        // 2) Auto-reply KUPCU (template_0u49rjp)
+        return emailjs.send("service_z1edus4", "template_0u49rjp", {
+          to_email: data.email,  // ⚠ u templatu To Email mora biti {{to_email}}
           ime: data.ime
         });
       })
@@ -365,6 +376,8 @@
         console.error(err);
       });
   });
+
   </script>
 </body>
 </html>
+
