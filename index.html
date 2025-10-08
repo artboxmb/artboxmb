@@ -272,20 +272,32 @@ addEventListener("scroll", () => { toTopBtn.style.display = scrollY > 300 ? "blo
 })();
 
 /* ===== Modals ===== */
+
+// ... (ostatak koda iznad ostavi)
+
 const uploadModal = document.getElementById("uploadModal");
 const adminModal  = document.getElementById("adminModal");
 const deleteModal = document.getElementById("deleteModal");
 
-document.getElementById("openUploadModal").onclick = () => uploadModal.style.display = "flex";
-document.getElementById("closeUploadModal").onclick = () => uploadModal.style.display = "none";
-document.getElementById("closeAdminModal").onclick  = () => adminModal.style.display  = "none";
-document.getElementById("closeDeleteModal").onclick = () => closeDeleteModal();
+document.getElementById("openUploadModal").onclick = () => (uploadModal.style.display = "flex");
+document.getElementById("closeUploadModal").onclick = () => (uploadModal.style.display = "none");
+document.getElementById("closeAdminModal").onclick  = () => (adminModal.style.display  = "none");
 
+// ⬇️ X na delete modalu SADA uvijek zatvara (force = true)
+document.getElementById("closeDeleteModal").onclick = () => closeDeleteModal(true);
+
+// klik izvan sadržaja zatvara sve modale (delete modal sa force = true)
 addEventListener("click", (e)=> {
-  if(e.target===uploadModal) uploadModal.style.display="none";
-  if(e.target===adminModal)  adminModal.style.display="none";
-  if(e.target===deleteModal) closeDeleteModal();
+  if (e.target === uploadModal) uploadModal.style.display = "none";
+  if (e.target === adminModal)  adminModal.style.display  = "none";
+  if (e.target === deleteModal) closeDeleteModal(true);
 });
+
+// ESC zatvara delete modal (uvijek)
+addEventListener("keydown", (e)=>{
+  if (e.key === "Escape") closeDeleteModal(true);
+});
+
 
 /* ===== Admin state ===== */
 let isAdmin = sessionStorage.getItem("ab_admin") === "1";
@@ -505,3 +517,4 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
+
