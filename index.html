@@ -134,6 +134,24 @@
     .lb-data .lb-number{ display:none }
   </style>
 </head>
+/* Natjeraj tekst u 2 reda unutar gumba */
+.header-actions a.btn {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal !important;  /* razbije 1 red */
+  line-height: 1.2;
+  padding: 8px 16px;
+}
+
+.header-actions a.btn .sub {
+  display: block;
+  font-size: 0.85em;
+  margin-top: 2px;
+  opacity: 0.9;
+}
 
 <body>
   <header>
@@ -527,6 +545,7 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
+
 
 
 
