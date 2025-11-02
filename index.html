@@ -132,26 +132,27 @@
     .lb-nav a.lb-prev, .lb-nav a.lb-next { opacity: 1 !important; }
     .lb-nav a { width: 20% !important; }
     .lb-data .lb-number{ display:none }
+  <style>
+    /* Natjeraj tekst u 2 reda unutar gumba */
+    .header-actions a.btn {
+      display: inline-flex !important;
+      flex-direction: column !important;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: normal !important;  /* razbije 1 red */
+      line-height: 1.2;
+      padding: 8px 16px;
+    }
+
+    .header-actions a.btn .sub {
+      display: block;
+      font-size: 0.85em;
+      margin-top: 2px;
+      opacity: 0.9;
+    }
   </style>
 </head>
-/* Natjeraj tekst u 2 reda unutar gumba */
-.header-actions a.btn {
-  display: inline-flex !important;
-  flex-direction: column !important;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  white-space: normal !important;  /* razbije 1 red */
-  line-height: 1.2;
-  padding: 8px 16px;
-}
-
-.header-actions a.btn .sub {
-  display: block;
-  font-size: 0.85em;
-  margin-top: 2px;
-  opacity: 0.9;
-}
 
 <body>
   <header>
@@ -161,15 +162,32 @@
         <h1>ArtBox MB</h1>
         <div class="subtitle">Unikatni pokloni od drveta</div>
         <span class="highlight">📦 Šaljemo brzom poštom u sve gradove BiH</span>
+
         <div class="header-actions">
-<a id="fb-link"
-   href="https://www.facebook.com/profile.php?id=100064599767535"
-   target="_blank"
-   class="btn"
-   rel="noopener">
-  <span class="label">Pogledaj na Facebooku</span>
-  <span class="sub">Klikni ovdje</span>
-</a>
+          <a id="fb-link"
+             href="https://www.facebook.com/profile.php?id=100064599767535"
+             target="_blank"
+             class="btn"
+             rel="noopener">
+            <span class="label">Pogledaj na Facebooku</span>
+            <span class="sub">(Klikni ovdje)</span>
+          </a>
+
+          <a id="ig-link"
+             href="https://www.instagram.com/artbox_mb/"
+             target="_blank"
+             class="btn"
+             rel="noopener">
+            <span class="label">Pogledaj na Instagramu</span>
+            <span class="sub">(Klikni ovdje)</span>
+          </a>
+
+          <button id="openUploadModal" class="btn" aria-label="Dodaj novu fotografiju" style="display:none">📸 Dodaj fotografiju</button>
+          <button id="toggleAdmin" class="btn admin-btn" title="Uključi Admin">🔒 Admin</button>
+        </div>
+      </div>
+    </div>
+  </header>
 
 <a id="ig-link"
    href="https://www.instagram.com/artbox_mb/"
@@ -545,6 +563,7 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   </script>
 </body>
 </html>
+
 
 
 
